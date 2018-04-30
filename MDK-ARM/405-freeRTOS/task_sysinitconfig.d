@@ -59,6 +59,8 @@
 405-freertos\task_sysinitconfig.o: ..\driver\Inc\Driver_DBUS.h
 405-freertos\task_sysinitconfig.o: ..\driver\Inc\Driver_Debug.h
 405-freertos\task_sysinitconfig.o: ..\driver\Inc\Driver_Judge.h
+405-freertos\task_sysinitconfig.o: ..\driver\Inc\Driver_Gimbal.h
+405-freertos\task_sysinitconfig.o: ..\driver\Inc\Driver_CanSend.h
 405-freertos\task_sysinitconfig.o: ..\driver\Inc\Driver_Chassis.h
 405-freertos\task_sysinitconfig.o: ..\driver\Inc\Driver_ICM20600.h
 405-freertos\task_sysinitconfig.o: ..\driver\Inc\Driver_PowerLimit.h

@@ -193,13 +193,14 @@ void BSP_GPIO_InitConfig(void)
 	HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
 /**********************************************IMU中断**************************************************/
+	
+	//PC4     ------> mpu INT
 
-	//PB0     ------> mpu INT
-	GPIO_InitStruct.Pin = GPIO_PIN_0;
-	GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;//GPIO_MODE_IT_RISING   GPIO_MODE_IT_FALLING
-	GPIO_InitStruct.Pull = GPIO_PULLUP;         //GPIO_PULLDOWN         GPIO_PULLUP
+	GPIO_InitStruct.Pin = GPIO_PIN_4;
+	GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;//GPIO_MODE_IT_RISING   GPIO_MODE_IT_FALLING
+	GPIO_InitStruct.Pull = GPIO_PULLDOWN;        //GPIO_PULLDOWN         GPIO_PULLUP
 	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
-	HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+	HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
 /**********************************************继电器***************************************************/
 
@@ -215,15 +216,7 @@ void BSP_GPIO_InitConfig(void)
 
 /********************************************状态指示灯************************************************/
 
-	//PC4     ------> Output 绿色
 
-	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_4, GPIO_PIN_RESET);
-
-	GPIO_InitStruct.Pin = GPIO_PIN_4;
-	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-	GPIO_InitStruct.Pull = GPIO_PULLUP;
-	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-	HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
 	//PC5     ------> Output 红色
 

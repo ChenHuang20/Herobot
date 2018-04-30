@@ -1,4 +1,5 @@
 405-freertos\task_gimbal.o: ..\task\Src\Task_Gimbal.c
+405-freertos\task_gimbal.o: E:\MDK5.25\ARM\ARMCC\Bin\..\include\math.h
 405-freertos\task_gimbal.o: ../Inc/Handle.h
 405-freertos\task_gimbal.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/FreeRTOS.h
 405-freertos\task_gimbal.o: E:\MDK5.25\ARM\ARMCC\Bin\..\include\stddef.h
@@ -19,3 +20,7 @@
 405-freertos\task_gimbal.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/event_groups.h
 405-freertos\task_gimbal.o: ..\task\Inc\Task_Gimbal.h
 405-freertos\task_gimbal.o: E:\MDK5.25\ARM\ARMCC\Bin\..\include\stdbool.h
+405-freertos\task_gimbal.o: ..\driver\Inc\Driver_Gimbal.h
+405-freertos\task_gimbal.o: ..\driver\Inc\Driver_DBUS.h
+405-freertos\task_gimbal.o: ..\algorithm\Inc\Algorithm_Pid.h
+405-freertos\task_gimbal.o: ..\algorithm\Inc\Algorithm_Estimator.h

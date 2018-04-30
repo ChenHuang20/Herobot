@@ -14,7 +14,7 @@ void Task_Monitor(void *Parameters)
 	portTickType xLastWakeTime;
 	xLastWakeTime = xTaskGetTickCount();
 
-	static TickType_t xTicksToWait = 1000 / portTICK_PERIOD_MS;//最大延时1s
+	static TickType_t xTicksToWait = 300 / portTICK_PERIOD_MS;//最大延时300ms
 	EventBits_t EventValue;
 
 	_StackSurplus.Monitor = uxTaskGetStackHighWaterMark(NULL);

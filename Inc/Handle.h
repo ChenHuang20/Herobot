@@ -21,7 +21,8 @@ typedef struct {
 	UBaseType_t PowerLimit;
 	UBaseType_t ModeSwitch;
 	UBaseType_t TakeBullet;
-	UBaseType_t CanSend;
+	UBaseType_t Can1Send;
+	UBaseType_t Can2Send;
 	UBaseType_t Monitor;
 	UBaseType_t Chassis;
 	UBaseType_t Gimbal;
@@ -36,7 +37,8 @@ typedef struct {
 	UBaseType_t PowerLimit;
 	UBaseType_t ModeSwitch;
 	UBaseType_t TakeBullet;
-	UBaseType_t CanSend;
+	UBaseType_t Can1Send;
+	UBaseType_t Can2Send;
 	UBaseType_t Monitor;
 	UBaseType_t Chassis;
 	UBaseType_t Gimbal;
@@ -53,7 +55,8 @@ extern StackSurplus_t _StackSurplus;
 
 extern TaskHandle_t * HandleModeSwitch;
 extern TaskHandle_t * HandleTakeBullet;
-extern TaskHandle_t * HandleCanSend;
+extern TaskHandle_t * HandleCan1Send;
+extern TaskHandle_t * HandleCan2Send;
 extern TaskHandle_t * HandleMonitor;
 extern TaskHandle_t * HandleChassis;
 extern TaskHandle_t * HandleGimbal;
@@ -65,6 +68,8 @@ extern SemaphoreHandle_t BinSemaphoreDBUS;
 extern SemaphoreHandle_t BinSemaphoreJudge;
 extern SemaphoreHandle_t BinSemaphoreChassis;
 extern SemaphoreHandle_t BinSemaphoreGimbal;
+extern SemaphoreHandle_t BinSemaphoreShoot;
+extern SemaphoreHandle_t BinSemaphoreTakeBullet;
 
 extern EventGroupHandle_t EventGroupHandler;
 

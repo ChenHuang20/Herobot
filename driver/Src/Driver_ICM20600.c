@@ -568,3 +568,8 @@ void icm20600_task(void)
 	estimator_task();
 	commander();
 }
+
+void ICM20600_InitConfig(void)
+{
+	icm20600_task();
+}

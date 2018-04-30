@@ -7,7 +7,8 @@
 extern "C" {
 #endif
 
-void Task_CanSend(void *Parameters);
+void Task_Can1Send(void *Parameters);
+void Task_Can2Send(void *Parameters);
 
 #ifdef __cplusplus
 }

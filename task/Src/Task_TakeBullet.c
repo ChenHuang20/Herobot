@@ -3,8 +3,6 @@
 
 #include "Task_TakeBullet.h"
 
-
-
 /**
   * @brief  取弹任务
   * @param  unused
@@ -21,6 +19,6 @@ void Task_TakeBullet(void *Parameters)
 		//获取剩余栈大小
 		_StackSurplus.TakeBullet = uxTaskGetStackHighWaterMark(NULL);
 
-		vTaskDelayUntil(&xLastWakeTime, (10 / portTICK_RATE_MS) );
+		vTaskDelayUntil(&xLastWakeTime, (5 / portTICK_RATE_MS) );
     }
 }

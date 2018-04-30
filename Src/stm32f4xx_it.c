@@ -442,15 +442,23 @@ void DMA2_Stream7_IRQHandler(void)
 
 /* USER CODE END 1 */
 
-void EXTI0_IRQHandler(void)
-{
-  HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_0);
-}
+//void EXTI0_IRQHandler(void)
+//{
+//  HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_0);
+//}
 
+/**********************************************ICM20600÷–∂œ»ŒŒÒ****************************************************/
 int uui = 0;
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
 	uui++;
+	if(uui % 2 == 0)
 	icm20600_task();
 }
+
+void EXTI4_IRQHandler(void)
+{
+  HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_4);
+}
+
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

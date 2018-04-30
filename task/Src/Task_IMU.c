@@ -17,26 +17,18 @@ void Task_IMU(void * pvParameters )
 	_StackSurplus.IMU = uxTaskGetStackHighWaterMark(NULL);
     while(1)
     {
-		uint8_t EventIMU = 0;
-		
 		_Tick.IMU++;
 
 		icm20600_task();
-		
-		EventIMU = 1;
 
-		//设置监控IMU事件位BIT1
-		if(EventGroupHandler!=NULL)
-		{
-			if(EventIMU == 1)
-			{
-				xEventGroupSetBits(EventGroupHandler,EVENTBIT_1);
-			}
-		}
 		//获取剩余栈大小
 		_StackSurplus.IMU = uxTaskGetStackHighWaterMark(NULL);
 
 		vTaskDelayUntil(&xLastWakeTime, (2 / portTICK_RATE_MS) );
 
+		if(_Tick.IMU >= 20)
+		{
+			vTaskDelete(NULL);
+		}
     }
 }

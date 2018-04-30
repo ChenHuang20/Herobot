@@ -33,7 +33,6 @@ void Task_Chassis(void * pvParameters )
 		_ChassisParam.TargetVY    = _radio.rc.y   * _ChassisParam.MaxWheelSpeed;
 		_ChassisParam.TargetOmega = _radio.rc.yaw * _ChassisParam.MaxWheelSpeed * 0.9f;
 
-		
 		_ChassisParam.Motor[0].TargetSpeed =  _ChassisParam.TargetVY + _ChassisParam.TargetVX + _ChassisParam.TargetOmega;
 		_ChassisParam.Motor[1].TargetSpeed = -_ChassisParam.TargetVY + _ChassisParam.TargetVX + _ChassisParam.TargetOmega;
 		_ChassisParam.Motor[2].TargetSpeed =  _ChassisParam.TargetVY - _ChassisParam.TargetVX + _ChassisParam.TargetOmega;
@@ -50,14 +49,14 @@ void Task_Chassis(void * pvParameters )
 		_ChassisParam.ChassisCurrent[i] = (int16_t)(CM_speed_pid[i].output * 1000.0f);
 		}
 
-		if(PowerLimit.Cut==ON)
-		{
-			Current_Distribution(_ChassisParam.ChassisCurrent,8000);
-			if(PowerLimit.RemainPower[2]>=50) {
-				PowerLimit.Cut=OFF;
-			}
-		}
-		Current_Distribution(_ChassisParam.ChassisCurrent,10000);
+//		if(PowerLimit.Cut==ON)
+//		{
+//			Current_Distribution(_ChassisParam.ChassisCurrent,8000);
+//			if(PowerLimit.RemainPower[2]>=50) {
+//				PowerLimit.Cut=OFF;
+//			}
+//		}
+//		Current_Distribution(_ChassisParam.ChassisCurrent,10000);
 
 	    if((BinSemaphoreChassis != NULL))//接收到数据，并且二值信号量有效
 		{

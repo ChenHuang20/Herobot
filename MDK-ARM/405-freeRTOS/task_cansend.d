@@ -52,5 +52,6 @@
 405-freertos\task_cansend.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h
 405-freertos\task_cansend.o: ..\driver\Inc\Driver_CanSend.h
 405-freertos\task_cansend.o: ..\driver\Inc\Driver_Chassis.h
+405-freertos\task_cansend.o: ..\driver\Inc\Driver_Gimbal.h
 405-freertos\task_cansend.o: ..\task\Inc\Task_CanSend.h
 405-freertos\task_cansend.o: ..\algorithm\Inc\Algorithm_Pid.h

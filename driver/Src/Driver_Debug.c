@@ -282,6 +282,8 @@ int16_t Send_float_data(void)
 
 /******************************写入PID函数*************************************/
 
+uint8_t debug_write = 0;
+
 void Write_PID(pid_debug_t *pid1,pid_debug_t *pid2,pid_debug_t *pid3)
 {
 	pid1->p = 0.01f*( (int16_t)(*(uart_rx+4 )<<8)|*(uart_rx+5 ) );
@@ -294,77 +296,10 @@ void Write_PID(pid_debug_t *pid1,pid_debug_t *pid2,pid_debug_t *pid3)
 	pid3->i = 0.01f*( (int16_t)(*(uart_rx+18)<<8)|*(uart_rx+19) );
 	pid3->d = 0.01f*( (int16_t)(*(uart_rx+20)<<8)|*(uart_rx+21) );
 
+	debug_write = 1;
+
 	_send_flag.send_check = !Send_Check();
 }
 
 /******************************上位机任务状态监测函数**************************/
 
-void debug_task(void)
-{
-    static uint32_t cnt = 0;
-
-	cnt ++;
-
-    if((cnt % 5) == 0)  //电机
-        _send_flag.send_motopwm = true;
-
-    if(_send_flag.send_check) {
-        _send_flag.send_check = !Send_Check();
-    }
-
-	else if(_send_flag.send_motopwm) {
-	//        _send_flag.send_motopwm = !Send_int16_data();
-		_send_flag.send_motopwm = !Send_float_data();
-
-	}
-
-	//接收第一组pid为pitch内环
-//	_params.rate_p[1] = _pid_debug[0].p;
-//	_params.rate_i[1] = _pid_debug[0].i;
-//	_params.rate_d[1] = _pid_debug[0].d;
-
-//	//接收第二组pid为pitch外环
-//	_params.att_p[1] = _pid_debug[1].p;
-//	_params.att_i[1] = _pid_debug[1].i;
-//	_params.att_d[1] = _pid_debug[1].d;
-
-//	//接收第三组pid为yaw内环
-//	_params.rate_p[2] = _pid_debug[2].p;
-//	_params.rate_i[2] = _pid_debug[2].i;
-//	_params.rate_d[2] = _pid_debug[2].d;
-
-//	//接收第四组pid为yaw外环
-//	_params.att_p[2] = _pid_debug[3].p;
-//	_params.att_i[2] = _pid_debug[3].i;
-//	_params.att_d[2] = _pid_debug[3].d;
-
-//	//接收第五组pid为CM1速度环
-//	_params.velocity_p[0] = _pid_debug[4].p;
-//	_params.velocity_i[0] = _pid_debug[4].i;
-//	_params.velocity_d[0] = _pid_debug[4].d;
-
-//	//接收第六组pid为CM2速度环
-//	_params.velocity_p[1] = _pid_debug[5].p;
-//	_params.velocity_i[1] = _pid_debug[5].i;
-//	_params.velocity_d[1] = _pid_debug[5].d;
-
-//	//接收第七组pid为CM3速度环
-//	_params.velocity_p[2] = _pid_debug[6].p;
-//	_params.velocity_i[2] = _pid_debug[6].i;
-//	_params.velocity_d[2] = _pid_debug[6].d;
-
-//	//接收第八组pid为CM3速度环
-//	_params.velocity_p[3] = _pid_debug[7].p;
-//	_params.velocity_i[3] = _pid_debug[7].i;
-//	_params.velocity_d[3] = _pid_debug[7].d;
-
-//	//接收第九组pid为大拨弹电机
-//	_params.stir_att_p = _pid_debug[8].p;
-//	_params.stir_p = _pid_debug[8].i;
-//	_params.stir_i = _pid_debug[8].d;
-
-//	_send.f_data[0] = _attitude.euler[0];
-//	_send.f_data[1] = _attitude.euler[1];
-//	_send.f_data[2] = _attitude.euler[2];
-		
-}

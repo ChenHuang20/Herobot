@@ -19,9 +19,9 @@ void BSP_NVIC_InitConfig(void)
 	HAL_NVIC_SetPriority(DebugMonitor_IRQn, 0, 0);
 	HAL_NVIC_SetPriority(PendSV_IRQn, 15, 0);
 
-	//EXTI0_IRQn interrupt configuration
-	HAL_NVIC_SetPriority(EXTI0_IRQn, 5, 0);
-	HAL_NVIC_EnableIRQ(EXTI0_IRQn);
+	//EXTI4_IRQn interrupt configuration
+	HAL_NVIC_SetPriority(EXTI4_IRQn, 5, 0);
+	HAL_NVIC_EnableIRQ(EXTI4_IRQn);
 
 	//SysTick_IRQn interrupt configuration
 	HAL_NVIC_SetPriority(SysTick_IRQn, 15, 0);

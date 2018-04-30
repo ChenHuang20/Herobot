@@ -119,6 +119,11 @@
       <TargetDriverDllRegistry>
         <SetRegEntry>
           <Number>0</Number>
+          <Key>DLGUARM</Key>
+          <Name>愖?P鮽w愖?P鮽w愖?</Name>
+        </SetRegEntry>
+        <SetRegEntry>
+          <Number>0</Number>
           <Key>ARMRTXEVENTFLAGS</Key>
           <Name>-L70 -Z18 -C0 -M0 -T1</Name>
         </SetRegEntry>
@@ -154,7 +159,7 @@
           <Type>0</Type>
           <LineNumber>528</LineNumber>
           <EnabledFlag>0</EnabledFlag>
-          <Address>134237756</Address>
+          <Address>134238152</Address>
           <ByteObject>0</ByteObject>
           <HtxType>0</HtxType>
           <ManyObjects>0</ManyObjects>
@@ -170,7 +175,7 @@
           <Type>0</Type>
           <LineNumber>448</LineNumber>
           <EnabledFlag>0</EnabledFlag>
-          <Address>134244524</Address>
+          <Address>134244196</Address>
           <ByteObject>0</ByteObject>
           <HtxType>0</HtxType>
           <ManyObjects>0</ManyObjects>
@@ -237,132 +242,77 @@
         <Ww>
           <count>7</count>
           <WinNumber>1</WinNumber>
-          <ItemText>_icm.inited,0x0A</ItemText>
+          <ItemText>_StackSurplus,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>8</count>
           <WinNumber>1</WinNumber>
-          <ItemText>imu_tick,0x0A</ItemText>
+          <ItemText>_ChassisParam.Motor,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>9</count>
           <WinNumber>1</WinNumber>
-          <ItemText>_StackSurplus,0x0A</ItemText>
+          <ItemText>_ChassisParam,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>10</count>
           <WinNumber>1</WinNumber>
-          <ItemText>_ChassisParam.Motor,0x0A</ItemText>
+          <ItemText>_Tick,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>11</count>
           <WinNumber>1</WinNumber>
-          <ItemText>CM1_speed_pid.output</ItemText>
+          <ItemText>write_hand</ItemText>
         </Ww>
         <Ww>
           <count>12</count>
           <WinNumber>1</WinNumber>
-          <ItemText>_ChassisParam,0x0A</ItemText>
+          <ItemText>ring_buffer</ItemText>
         </Ww>
         <Ww>
           <count>13</count>
           <WinNumber>1</WinNumber>
-          <ItemText>HandleCanSend,0x0A</ItemText>
+          <ItemText>read_hand</ItemText>
         </Ww>
         <Ww>
           <count>14</count>
           <WinNumber>1</WinNumber>
-          <ItemText>_Tick.CanSend,0x0A</ItemText>
+          <ItemText>EventValue11,0x10</ItemText>
         </Ww>
         <Ww>
           <count>15</count>
           <WinNumber>1</WinNumber>
-          <ItemText>BinarySemaphore2</ItemText>
+          <ItemText>_Judge,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>16</count>
           <WinNumber>1</WinNumber>
-          <ItemText>_Tick,0x0A</ItemText>
+          <ItemText>_ChassisParam.Motor,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>17</count>
           <WinNumber>1</WinNumber>
-          <ItemText>_game_state</ItemText>
+          <ItemText>CM_speed_pid</ItemText>
         </Ww>
         <Ww>
           <count>18</count>
           <WinNumber>1</WinNumber>
-          <ItemText>_game_info</ItemText>
+          <ItemText>PowerLimit,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>19</count>
           <WinNumber>1</WinNumber>
-          <ItemText>write_hand</ItemText>
+          <ItemText>_ChassisParam.Motor[0].TargetSpeed</ItemText>
         </Ww>
         <Ww>
           <count>20</count>
           <WinNumber>1</WinNumber>
-          <ItemText>ring_buffer</ItemText>
+          <ItemText>PowerLimit.RemainPower[2]</ItemText>
         </Ww>
         <Ww>
           <count>21</count>
           <WinNumber>1</WinNumber>
-          <ItemText>read_hand</ItemText>
-        </Ww>
-        <Ww>
-          <count>22</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>EventValue11,0x10</ItemText>
-        </Ww>
-        <Ww>
-          <count>23</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>_Judge,0x0A</ItemText>
-        </Ww>
-        <Ww>
-          <count>24</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>_ChassisParam.Motor,0x0A</ItemText>
-        </Ww>
-        <Ww>
-          <count>25</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>CM1_speed_pid</ItemText>
-        </Ww>
-        <Ww>
-          <count>26</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>CM2_speed_pid</ItemText>
-        </Ww>
-        <Ww>
-          <count>27</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>CM3_speed_pid</ItemText>
-        </Ww>
-        <Ww>
-          <count>28</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>CM4_speed_pid</ItemText>
-        </Ww>
-        <Ww>
-          <count>29</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>CM_speed_pid</ItemText>
-        </Ww>
-        <Ww>
-          <count>30</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>PowerLimit,0x0A</ItemText>
-        </Ww>
-        <Ww>
-          <count>31</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>_ChassisParam.Motor[0].TargetSpeed</ItemText>
-        </Ww>
-        <Ww>
-          <count>32</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>PowerLimit.RemainPower[2]</ItemText>
+          <ItemText>_Judge</ItemText>
         </Ww>
       </WatchWindow1>
       <WatchWindow2>

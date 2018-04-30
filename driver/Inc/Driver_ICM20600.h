@@ -44,6 +44,7 @@ extern float lpf_allpy(low_pass_filter_t *p, float sample);
 extern float lpf_reset(low_pass_filter_t *p, float sample);
 
 void icm20600_task(void);
+void ICM20600_InitConfig(void);
 
 #ifdef __cplusplus
 }
