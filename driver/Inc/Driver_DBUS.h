@@ -11,6 +11,13 @@ extern "C" {
 #define DMA_Handle hdma_usart2_rx
 #define UART2_MAX_LEN 100
 
+enum
+{
+  RC_UP = 1,
+  RC_MI = 3,
+  RC_DN = 2,
+};
+
 typedef struct {
     uint64_t timestamp;
 
@@ -87,6 +94,12 @@ extern radio_t _radio;
 
 extern void DBUS_InitConfig(void);
 extern void DBUS_DataProcessing(void);
+
+static void key_read(void);
+extern uint8_t single_press(uint8_t key);
+extern uint8_t double_press(uint8_t key);
+extern uint8_t combine_press(uint8_t key1, uint8_t key2);
+extern uint8_t long_press(uint8_t key, uint64_t t);
 
 #ifdef __cplusplus
 }

@@ -1,6 +1,7 @@
 
 #include "BSP_UART.h"
 #include "BSP_DMA.h"
+#include "BSP_TIM.h"
 #include "Driver_DBUS.h"
 
 radio_raw_t _radio_raw = { 0 };
@@ -55,8 +56,6 @@ void DBUS_DataProcessing(void)
 		_radio_raw.key.v_l = buf[14];
 		_radio_raw.key.v_h = buf[15];
 
-//		_radio.timestamp = time();
-
 		_radio.rc.y = _radio_raw.rc.ch1 / 660.0f;
 		_radio.rc.x = _radio_raw.rc.ch0 / 660.0f;
 		_radio.rc.pitch = -_radio_raw.rc.ch3 / 660.0f;
@@ -69,4 +68,89 @@ void DBUS_DataProcessing(void)
 		_radio.mouse.z = _radio_raw.mouse.z * 10;
 		_radio.mouse.press_l = _radio_raw.mouse.press_l;
 		_radio.mouse.press_r = _radio_raw.mouse.press_r;
+
+		key_read();
+}
+
+/**
+  * @brief  获取按键值
+  * @param  void
+  * @retval void
+  */
+static void key_read(void)
+{
+    //低位建
+    _radio.key.W = _radio_raw.key.v_l >> 0;//0x01 low
+    _radio.key.S = _radio_raw.key.v_l >> 1;//0x02 low
+    _radio.key.A = _radio_raw.key.v_l >> 2;//0x04 low
+    _radio.key.D = _radio_raw.key.v_l >> 3;//0x08 low
+    _radio.key.Shift = _radio_raw.key.v_l >> 4;//0x10 low
+    _radio.key.Ctrl = _radio_raw.key.v_l >> 5;//0x20 low
+    _radio.key.Q = _radio_raw.key.v_l >> 6;//0x40 low
+    _radio.key.E = _radio_raw.key.v_l >> 7;//0x80 low
+    //高位键
+    _radio.key.R = _radio_raw.key.v_h >> 0;//0x01 high
+    _radio.key.F = _radio_raw.key.v_h >> 1;//0x02 high
+    _radio.key.G = _radio_raw.key.v_h >> 2;//0x04 high
+    _radio.key.Z = _radio_raw.key.v_h >> 3;//0x08 high
+    _radio.key.X = _radio_raw.key.v_h >> 4;//0x10 high
+    _radio.key.C = _radio_raw.key.v_h >> 5;//0x20 high
+    _radio.key.V = _radio_raw.key.v_h >> 6;//0x40 high
+    _radio.key.B = _radio_raw.key.v_h >> 7;//0x80 high
+}
+
+/**
+  * @brief  单击
+  * @param  按键
+  * @retval 按下：1  未按下：2
+  */
+uint8_t single_press(uint8_t key)
+{
+    if(key)
+        return 1;
+    else
+        return 0;
+}
+
+/**
+  * @brief  双击
+  * @param  按键
+  * @retval 按下：1  未按下：2
+  */
+uint8_t double_press(uint8_t key)
+{
+    return 0;
+}
+
+/**
+  * @brief  组合按键，只包括一个高位键和一个低位键的组合，两个高位键或两个低位键的组合需自行编写。组合按键为或运算逻辑
+  * @param  按键1
+  * @param  按键2
+  * @retval 按下：1  未按下：2
+  */
+uint8_t combine_press(uint8_t key1, uint8_t key2)
+{
+    if(_radio_raw.key.v_l != 0 && _radio_raw.key.v_h != 0) {
+        if(key1&key2) {
+            return 1;
+        }
+    }
+    return 0;
+}
+
+/**
+  * @brief  长按
+  * @param  按键
+  * @param  延时时间
+  * @retval 按下：1  未按下：2
+  */
+uint8_t long_press(uint8_t key, uint64_t set_time)
+{
+    uint64_t t = time();
+    //若按键按下
+    while(!single_press(key)) {
+        if(time() - t >= set_time)
+            return 1;
+    }
+    return 0;
 }

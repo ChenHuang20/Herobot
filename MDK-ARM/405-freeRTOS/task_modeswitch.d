@@ -17,5 +17,7 @@
 405-freertos\task_modeswitch.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/queue.h
 405-freertos\task_modeswitch.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/semphr.h
 405-freertos\task_modeswitch.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/event_groups.h
-405-freertos\task_modeswitch.o: ..\task\Inc\Task_ModeSwitch.h
+405-freertos\task_modeswitch.o: ..\driver\Inc\Driver_DBUS.h
 405-freertos\task_modeswitch.o: E:\MDK5.25\ARM\ARMCC\Bin\..\include\stdbool.h
+405-freertos\task_modeswitch.o: ..\driver\Inc\Driver_ModeSwitch.h
+405-freertos\task_modeswitch.o: ..\task\Inc\Task_ModeSwitch.h

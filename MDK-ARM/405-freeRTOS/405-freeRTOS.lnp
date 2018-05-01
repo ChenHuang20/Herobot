@@ -33,6 +33,7 @@
 "405-freertos\driver_icm20600.o"
 "405-freertos\driver_powerlimit.o"
 "405-freertos\driver_synchrobelt.o"
+"405-freertos\driver_modeswitch.o"
 "405-freertos\bsp_spi.o"
 "405-freertos\bsp_tim.o"
 "405-freertos\bsp_can.o"

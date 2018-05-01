@@ -35,4 +35,5 @@
 405-freertos\driver_dbus.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h
 405-freertos\driver_dbus.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h
 405-freertos\driver_dbus.o: ..\bsp\Inc\BSP_DMA.h
+405-freertos\driver_dbus.o: ..\bsp\Inc\BSP_TIM.h
 405-freertos\driver_dbus.o: ..\driver\Inc\Driver_DBUS.h

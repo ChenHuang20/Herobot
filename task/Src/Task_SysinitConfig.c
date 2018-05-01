@@ -17,7 +17,7 @@
 #include "Driver_Chassis.h"
 #include "Driver_ICM20600.h"
 #include "Driver_PowerLimit.h"
-
+#include "Driver_ModeSwitch.h"
 
 #include "Task_SysInitConfig.h"
 #include "Task_ModeSwitch.h"
@@ -53,14 +53,15 @@ void Task_SysInitConfig(void *Parameters)
 
 /******************************************控制模块初始化********************************************/
 
-	Chassis_InitConfig();
-	Gimbal_InitConfig();
-	CanSend_InitConfig();
-	ICM20600_InitConfig();
 	PowerLimit_InitConfig();
-	DBUS_InitConfig();
+	ModeSwitch_InitConfig();
+	ICM20600_InitConfig();
+	Chassis_InitConfig();
+	CanSend_InitConfig();
+	Gimbal_InitConfig();
 	Judge_InitConfig();
 	Debug_InitConfig();
+	DBUS_InitConfig();
 
 /********************************************进入临界区**********************************************/
 

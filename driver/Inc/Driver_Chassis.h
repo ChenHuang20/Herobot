@@ -29,9 +29,9 @@ typedef struct
 	float MaxWheelSpeed;
 	int16_t ChassisCurrent[4];
 	int16_t ChassisMaxSumCurrent;
-	float kp[4];
-	float ki[4];
-	float kd[4];
+	float kp[5];
+	float ki[5];
+	float kd[5];
 }ChassisParam_t;
 
 

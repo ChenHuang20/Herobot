@@ -53,16 +53,13 @@ void PID_Calc(Pid_TypeDef * pid,
 	//是否进入死区
 	if(fabsf(pid->err[NOW]) >= pid->dead_band)//偏差值大于等于死区值
 	{
-		if(fabsf(pid->err[NOW]) <= pid->intergral_band)//当偏差小于积分范围的时候，进入积分
-			pid->intergral += (pid->ki) * (pid->err[NOW]);//积分值
-		else
-			{pid->intergral = pid->intergral*0.99f;}//不在积分范围内，衰退积分曲线
+		pid->intergral += (pid->ki) * (pid->err[NOW]);//积分值
+
 		if(pid->intergral > pid->IntegralLimit)//积分上限
 			pid->intergral = pid->IntegralLimit;
 		else if(pid->intergral < -pid->IntegralLimit)//积分下限
 			pid->intergral = -pid->IntegralLimit;
 
-		pid->intergral += (pid->ki) * (pid->err[NOW]);//积分值
 		if(PID_mode == POSITION_PID)
 		{
   		p = pid->kp * (pid->err[NOW]);

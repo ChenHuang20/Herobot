@@ -570,6 +570,11 @@
               <FileType>1</FileType>
               <FilePath>..\driver\Src\Driver_SynchroBelt.c</FilePath>
             </File>
+            <File>
+              <FileName>Driver_ModeSwitch.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\driver\Src\Driver_ModeSwitch.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

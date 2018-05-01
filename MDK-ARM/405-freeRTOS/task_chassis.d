@@ -20,6 +20,7 @@
 405-freertos\task_chassis.o: ..\driver\Inc\Driver_PowerLimit.h
 405-freertos\task_chassis.o: E:\MDK5.25\ARM\ARMCC\Bin\..\include\stdbool.h
 405-freertos\task_chassis.o: ..\driver\Inc\Driver_Chassis.h
+405-freertos\task_chassis.o: ..\driver\Inc\Driver_Gimbal.h
 405-freertos\task_chassis.o: ..\driver\Inc\Driver_DBUS.h
 405-freertos\task_chassis.o: ..\task\Inc\Task_Chassis.h
 405-freertos\task_chassis.o: ..\algorithm\Inc\Algorithm_Pid.h

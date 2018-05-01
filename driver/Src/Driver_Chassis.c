@@ -24,16 +24,19 @@ ChassisParam_t _ChassisParam = {
 	.kp[1] = 4.0f,
 	.kp[2] = 4.0f,
 	.kp[3] = 4.0f,
+	.kp[4] = 4.0f,
 
 	.ki[0] = 0.01f,
 	.ki[1] = 0.01f,
 	.ki[2] = 0.01f,
 	.ki[3] = 0.01f,
+	.ki[4] = 0.01f,
 
 	.kd[0] = 0.0f,
 	.kd[1] = 0.0f,
 	.kd[2] = 0.0f,
 	.kd[3] = 0.0f,
+	.kd[4] = 0.0f
  };
 
 /**
@@ -74,6 +77,15 @@ void Chassis_InitConfig(void)
 			  _ChassisParam.kp[3],//kp
 			  _ChassisParam.ki[3],//ki
 			  _ChassisParam.kd[3],//kd
+			  16.1f,			  //PID最大输出
+			  0,				  //死区
+			  0,				  //积分范围
+			  3);			      //积分限幅
+
+	PID_Init(&CM_rotate_pid,	  //底盘跟随位置环
+			  _ChassisParam.kp[4],//kp
+			  _ChassisParam.ki[4],//ki
+			  _ChassisParam.kd[4],//kd
 			  16.1f,			  //PID最大输出
 			  0,				  //死区
 			  0,				  //积分范围

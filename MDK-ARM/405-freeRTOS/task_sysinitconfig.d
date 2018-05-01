@@ -64,6 +64,7 @@
 405-freertos\task_sysinitconfig.o: ..\driver\Inc\Driver_Chassis.h
 405-freertos\task_sysinitconfig.o: ..\driver\Inc\Driver_ICM20600.h
 405-freertos\task_sysinitconfig.o: ..\driver\Inc\Driver_PowerLimit.h
+405-freertos\task_sysinitconfig.o: ..\driver\Inc\Driver_ModeSwitch.h
 405-freertos\task_sysinitconfig.o: ..\task\Inc\Task_SysInitConfig.h
 405-freertos\task_sysinitconfig.o: ..\task\Inc\Task_ModeSwitch.h
 405-freertos\task_sysinitconfig.o: ..\task\Inc\Task_PowerLimit.h

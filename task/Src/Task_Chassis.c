@@ -2,6 +2,7 @@
 #include "Handle.h"
 #include "Driver_PowerLimit.h"
 #include "Driver_Chassis.h"
+#include "Driver_Gimbal.h"
 #include "Driver_DBUS.h"
 
 #include "Task_Chassis.h"
@@ -9,6 +10,8 @@
 #include "Algorithm_Pid.h"
 
 #define RPM_TO_V 0.007958701389f
+#define YAW_ABSANGLE 3000
+#define PITCH_ABSANGLE 3000
 
 /**
   * @brief  µ×ÅÌÈÎÎñ
@@ -23,6 +26,8 @@ void Task_Chassis(void * pvParameters )
     {
 		_Tick.Chassis ++;
 
+		
+		
 		//max line speed is 4.06 m/s
 		float MotoSpeed[4] = {_ChassisParam.Motor[0].RealSpeed * RPM_TO_V / 19.0f,
 							  _ChassisParam.Motor[1].RealSpeed * RPM_TO_V / 19.0f,
@@ -31,7 +36,13 @@ void Task_Chassis(void * pvParameters )
 
 		_ChassisParam.TargetVX    = _radio.rc.x   * _ChassisParam.MaxWheelSpeed;
 		_ChassisParam.TargetVY    = _radio.rc.y   * _ChassisParam.MaxWheelSpeed;
+
+		//ÎÞµ×ÅÌ¸úËæ
 		_ChassisParam.TargetOmega = _radio.rc.yaw * _ChassisParam.MaxWheelSpeed * 0.9f;
+
+		//ÓÐµ×ÅÌ¸úËæ
+//		PID_Calc(&CM_rotate_pid, YawParam.RealEncoderAngle, YAW_ABSANGLE, POSITION_PID);
+//		_ChassisParam.TargetOmega = CM_rotate_pid.output;
 
 		_ChassisParam.Motor[0].TargetSpeed =  _ChassisParam.TargetVY + _ChassisParam.TargetVX + _ChassisParam.TargetOmega;
 		_ChassisParam.Motor[1].TargetSpeed = -_ChassisParam.TargetVY + _ChassisParam.TargetVX + _ChassisParam.TargetOmega;
