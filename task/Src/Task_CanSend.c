@@ -6,6 +6,8 @@
 #include "Driver_CanSend.h"
 #include "Driver_Chassis.h"
 #include "Driver_Gimbal.h"
+#include "Driver_Stir.h"
+#include "Driver_Friction.h"
 
 #include "Task_CanSend.h"
 
@@ -50,19 +52,19 @@ void Task_Can1Send(void *Parameters)
 				xEventGroupSetBits(EventGroupHandler,EVENTBIT_0);
 			}
 		}
-		//获取云台任务信号量
-		if(BinSemaphoreGimbal!=NULL)
-		{
-			SemaphoreGimbal = xSemaphoreTake(BinSemaphoreGimbal,2);//等待2ms超时时间
+//		//获取云台任务信号量
+//		if(BinSemaphoreGimbal!=NULL)
+//		{
+//			SemaphoreGimbal = xSemaphoreTake(BinSemaphoreGimbal,2);//等待2ms超时时间
 
-			if(SemaphoreGimbal == pdTRUE)
-			{
-				EventCanGimbal = send_gimbal_current(&hcan1,                   //CAN句柄
-													 PitchParam.TargetCurrent, //pitch电流   6623
-													 //YawParam.TargetCurrent
-													0							);  //yaw电流	 6623
-			}
-		}
+//			if(SemaphoreGimbal == pdTRUE)
+//			{
+//				EventCanGimbal = send_gimbal_current(&hcan1,                   //CAN句柄
+//													 PitchParam.TargetCurrent, //pitch电流   6623
+//													 //YawParam.TargetCurrent
+//													0							);  //yaw电流	 6623
+//			}
+//		}
 		//设置监控云台CAN事件位BIT1
 		if(EventGroupHandler!=NULL)
 		{
@@ -87,6 +89,7 @@ void Task_Can1Send(void *Parameters)
 void Task_Can2Send(void *Parameters)
 {
 	BaseType_t SemaphoreShoot = pdFALSE;
+	BaseType_t SemaphoreTakeBullet = pdFALSE;
 	_StackSurplus.Can2Send = uxTaskGetStackHighWaterMark(NULL);
 
     while(1)
@@ -102,10 +105,10 @@ void Task_Can2Send(void *Parameters)
 			if(SemaphoreShoot == pdTRUE)
 			{
 				EventCanShoot = send_shoot_current(&hcan2,//CAN句柄
-													0,    //大摩擦轮1电流  3510
-													0,    //大摩擦轮2电流  3510
-													0,    //小拨弹电机电流 2310
-													0);   //大拨弹电机电流 3508
+													_Fric42Param.TargetSpeed[0],    //大摩擦轮1电流  3510
+													_Fric42Param.TargetSpeed[1],    //大摩擦轮2电流  3510
+													_Stir17Param.TargetCurrent,    //小拨弹电机电流 2310
+													_Stir42Param.TargetCurrent);   //大拨弹电机电流 3508
 			}
 		}
 		//设置监控射击CAN事件位BIT2
@@ -119,9 +122,9 @@ void Task_Can2Send(void *Parameters)
 		//获取取弹任务信号量
 		if(BinSemaphoreTakeBullet!=NULL)
 		{
-			SemaphoreShoot = xSemaphoreTake(BinSemaphoreTakeBullet,2);//等待2ms超时时间
+			SemaphoreTakeBullet = xSemaphoreTake(BinSemaphoreTakeBullet,2);//等待2ms超时时间
 
-			if(SemaphoreShoot == pdTRUE)
+			if(SemaphoreTakeBullet == pdTRUE)
 			{
 				//蓝盒速度环
 				EventCanTakeBullet = CAN_RoboModule_DRV_Velocity_Mode(0,	//group

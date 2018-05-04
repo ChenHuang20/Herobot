@@ -195,7 +195,7 @@ int8_t judge_read(void)
 		{
 			return -2;
 		}
-		if(Verify_CRC16_Check_Sum(frame, 44))
+		if(Verify_CRC16_Check_Sum(frame, (datalength+9)))
 		//判断CRC16校验位是否正确
 		{
 			judge_data2018(frame);

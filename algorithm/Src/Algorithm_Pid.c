@@ -8,8 +8,11 @@ Pid_TypeDef Yaw_speed_pid = { 0 };
 Pid_TypeDef Yaw_position_pid = { 0 };
 Pid_TypeDef Pitch_speed_pid = { 0 };
 Pid_TypeDef Pitch_position_pid = { 0 };
-Pid_TypeDef Shoot_speed_pid = { 0 };
-Pid_TypeDef Shoot_position_pid = { 0 };
+Pid_TypeDef Stir42_speed_pid = { 0 };           
+Pid_TypeDef Stir17_speed_pid = { 0 };  
+Pid_TypeDef Stir17_position_pid = { 0 };
+Pid_TypeDef Fric42_speed_pid[2] = { 0 };    
+Pid_TypeDef Fric17_speed_pid[2] = { 0 };
 Pid_TypeDef Power_Limit_pid = { 0 };
 
 //≥ı ºªØPID

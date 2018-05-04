@@ -26,16 +26,14 @@ void Task_Chassis(void * pvParameters )
     {
 		_Tick.Chassis ++;
 
-		
-		
 		//max line speed is 4.06 m/s
 		float MotoSpeed[4] = {_ChassisParam.Motor[0].RealSpeed * RPM_TO_V / 19.0f,
 							  _ChassisParam.Motor[1].RealSpeed * RPM_TO_V / 19.0f,
 							  _ChassisParam.Motor[2].RealSpeed * RPM_TO_V / 19.0f,
 							  _ChassisParam.Motor[3].RealSpeed * RPM_TO_V / 19.0f};
 
-		_ChassisParam.TargetVX    = _radio.rc.x   * _ChassisParam.MaxWheelSpeed;
-		_ChassisParam.TargetVY    = _radio.rc.y   * _ChassisParam.MaxWheelSpeed;
+		_ChassisParam.TargetVX  = _radio.rc.x * _ChassisParam.MaxWheelSpeed;
+		_ChassisParam.TargetVY  = _radio.rc.y * _ChassisParam.MaxWheelSpeed;
 
 		//ÎÞµ×ÅÌ¸úËæ
 		_ChassisParam.TargetOmega = _radio.rc.yaw * _ChassisParam.MaxWheelSpeed * 0.9f;
