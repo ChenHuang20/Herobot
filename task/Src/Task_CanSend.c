@@ -59,7 +59,8 @@ void Task_Can1Send(void *Parameters)
 			{
 				EventCanGimbal = send_gimbal_current(&hcan1,                   //CAN句柄
 													 PitchParam.TargetCurrent, //pitch电流   6623
-													 YawParam.TargetCurrent);  //yaw电流	 6623
+													 //YawParam.TargetCurrent
+													0							);  //yaw电流	 6623
 			}
 		}
 		//设置监控云台CAN事件位BIT1

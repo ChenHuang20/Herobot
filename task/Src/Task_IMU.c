@@ -25,10 +25,5 @@ void Task_IMU(void * pvParameters )
 		_StackSurplus.IMU = uxTaskGetStackHighWaterMark(NULL);
 
 		vTaskDelayUntil(&xLastWakeTime, (2 / portTICK_RATE_MS) );
-
-		if(_Tick.IMU >= 20)
-		{
-			vTaskDelete(NULL);
-		}
     }
 }

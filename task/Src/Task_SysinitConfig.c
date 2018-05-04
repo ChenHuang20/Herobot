@@ -129,16 +129,16 @@ void Task_SysInitConfig(void *Parameters)
 	xTaskCreate(Task_Gimbal, "Task_Gimbal", 128, NULL, 6, HandleGimbal );
 
     //射击任务
-	xTaskCreate(Task_Shoot, "Task_Shoot", 256, NULL, 6, HandleShoot );
+//	xTaskCreate(Task_Shoot, "Task_Shoot", 256, NULL, 6, HandleShoot );
 
     //取弹任务
-	xTaskCreate(Task_TakeBullet, "Task_TakeBullet", 64, NULL, 6, HandleTakeBullet );
+//	xTaskCreate(Task_TakeBullet, "Task_TakeBullet", 64, NULL, 6, HandleTakeBullet );
 
     //Can1发送任务
 	xTaskCreate(Task_Can1Send, "Task_Can1Send", 256, NULL, 5, HandleCan1Send );
 
 	//Can2发送任务
-	xTaskCreate(Task_Can2Send, "Task_Can2Send", 256, NULL, 5, HandleCan2Send );
+//	xTaskCreate(Task_Can2Send, "Task_Can2Send", 256, NULL, 5, HandleCan2Send );
 
     //监视任务
     xTaskCreate(Task_Monitor, "Task_Monitor", 64, NULL, 4, HandleMonitor );
@@ -146,8 +146,8 @@ void Task_SysInitConfig(void *Parameters)
 	//上位机调试任务   (仅在调试时创建)
 //	xTaskCreate(Task_Debug, "Task_Debug", 256, NULL, 3, NULL );
 
-	//IMU任务  (无用勿创建,暂时保留)
-//	xTaskCreate(Task_IMU, "Task_IMU", 128, NULL, 2, HandleIMU );
+	//IMU任务  (板子没有IMU中断则创建)
+	xTaskCreate(Task_IMU, "Task_IMU", 128, NULL, 2, HandleIMU );
 
 
 /****************************************阻塞系统初始化任务******************************************/
