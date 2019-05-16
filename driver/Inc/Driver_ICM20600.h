@@ -12,6 +12,13 @@ typedef struct {
     float accel_scale[3];
     float gyro_offset[3];
     float gyro_scale[3];
+	
+	
+    float att_p[3];
+    float rate_p[3];
+    float rate_d[3];
+    float rate_i[3];
+    float rate_i_max[3];
 } params_t;
 
 typedef struct {

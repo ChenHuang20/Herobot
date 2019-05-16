@@ -6,6 +6,9 @@
 #include "BSP_UART.h"
 #include "Driver_Judge.h"
 #include "Driver_CRC.h"
+
+#include "Driver_Monitor.h"
+
 #include <string.h>
 
 #define buffer_size 1000
@@ -23,8 +26,14 @@ uint16_t num = 0;
 //裁判系统串口
 extern UART_HandleTypeDef judgement_huart;
 
+FLAOT_UNION DataA;
+FLAOT_UNION DataB;
+FLAOT_UNION DataC;
+
 //2018裁判系统结构体
 Judge_t _Judge = { 0 };
+JudgeSend_t _JudgeSend = { 0 };
+uint8_t JudgeSendBuff[21];
 
 /**
   * @brief  裁判系统初始化
@@ -33,7 +42,13 @@ Judge_t _Judge = { 0 };
   */
 void Judge_InitConfig(void)
 {
+	_JudgeSend.SOF=0xA5;
+	_JudgeSend.DataLength = 13;
+	_JudgeSend.CmdID=0x0100;
+	//使能串口DMA接收并开启串口空闲中断
 	UART_DMA_RX_INIT(&judgement_huart, judgement_uart_rx, sizeof(judgement_uart_rx));
+	//使能串口DMA发送并开启DMA发送中断
+    UART_DMA_TX_INIT(&judgement_huart,22);
 }
 
 /*函数功能：将DMA在缓存区所存的数据按照裁判系统读取函数的要求传递给读函数。
@@ -114,8 +129,15 @@ static void judge_data2018(uint8_t* frame)
         case 0x0003:
 					_Judge.ShootTick = Tick;
 					_Judge.bulletType = data[0];							 //弹丸类型，1：17mm，2:42mm
-					_Judge.bulletFreq = data[1];							 //弹丸射频  (发每秒)
-					_Judge.bulletSpeed = u32_to_float(&data[2]);			 //弹丸射速  (m/s)
+                    if(_Judge.bulletType == 1) {
+                    _Judge.bulletFreq[0] = data[1];							 //17mm弹丸射频  (发每秒)
+					_Judge.bulletSpeed[0] = u32_to_float(&data[2]);			 //17mm弹丸射速  (m/s)
+
+                    }
+                    else if(_Judge.bulletType == 2) {
+					_Judge.bulletFreq[1] = data[1];							 //42mm弹丸射频  (发每秒)
+					_Judge.bulletSpeed[1] = u32_to_float(&data[2]);			 //42mm弹丸射速  (m/s)
+                    }
 					break;
 
 		//实时功率和热量数据，50Hz频率接收
@@ -143,7 +165,6 @@ static void judge_data2018(uint8_t* frame)
 		//Buff获取数据
         case 0x0007:
 					_Judge.buffType = data[0];								 //Buff类型
-					_Judge.buffAddition = data[1];							 //加成百分比(比如10代表加成10%)
 					break;
 
 		//机器人位置朝向信息
@@ -156,7 +177,10 @@ static void judge_data2018(uint8_t* frame)
 
 		//参赛队自定义数据
 		case 0x0100:
-					
+					_Judge.ShowData1 = u32_to_float(&data[0]);
+					_Judge.ShowData2 = u32_to_float(&data[4]);
+					_Judge.ShowData3 = u32_to_float(&data[8]);
+					_Judge.mask = data[12];
 					break;
 		default:
 		
@@ -209,6 +233,88 @@ int8_t judge_read(void)
 	}
 	else return -1;
 }
+
+void Judge_SendData(void)
+{
+	if(_JudgeSend.SendAllow==0)
+	{
+		_JudgeSend.SendAllow=1;
+		_JudgeSend.Seq++;
+
+		_JudgeSend.DataA=_Judge.chassisPower;
+		_JudgeSend.DataB=_Judge.chassisPowerBuffer;
+		_JudgeSend.DataC=_Judge.chassisVolt;	
+
+		JudgeSendBuff[0]=_JudgeSend.SOF;
+		JudgeSendBuff[1]=_JudgeSend.DataLength;
+		JudgeSendBuff[2]=_JudgeSend.DataLength>>8;
+		JudgeSendBuff[3]=_JudgeSend.Seq;
+		Append_CRC8_Check_Sum(JudgeSendBuff,5);
+		JudgeSendBuff[5]=_JudgeSend.CmdID;
+		JudgeSendBuff[6]=_JudgeSend.CmdID>>8;
+
+		DataA.value=_JudgeSend.DataA;
+		JudgeSendBuff[7]=DataA.float_byte.low_byte;
+		JudgeSendBuff[8]=DataA.float_byte.mlow_byte;
+		JudgeSendBuff[9]=DataA.float_byte.mhigh_byte;
+		JudgeSendBuff[10]=DataA.float_byte.high_byte;
+
+		DataB.value=_JudgeSend.DataB;
+		JudgeSendBuff[11]=DataB.float_byte.low_byte;
+		JudgeSendBuff[12]=DataB.float_byte.mlow_byte;
+		JudgeSendBuff[13]=DataB.float_byte.mhigh_byte;
+		JudgeSendBuff[14]=DataB.float_byte.high_byte;
+
+		DataC.value=_JudgeSend.DataC;
+		JudgeSendBuff[15]=DataC.float_byte.low_byte;
+		JudgeSendBuff[16]=DataC.float_byte.mlow_byte;
+		JudgeSendBuff[17]=DataC.float_byte.mhigh_byte;
+		JudgeSendBuff[18]=DataC.float_byte.high_byte;
+
+		JudgeSendBuff[19]=_Judge.mask;
+
+//        if(_shooting.friction == 1)
+//            JudgeSendBuff[19] = JudgeSendBuff[19]|0x20;
+//        else
+//            JudgeSendBuff[19] = JudgeSendBuff[19]&0xDF;
+
+//        if(_chassis.mode == 1)
+//            JudgeSendBuff[19] = JudgeSendBuff[19]|0x10;
+//        else
+//            JudgeSendBuff[19] = JudgeSendBuff[19]&0xEF;
+
+//        if(_chassis.mode == 2)
+//            JudgeSendBuff[19] = JudgeSendBuff[19]|0x08;
+//        else
+//            JudgeSendBuff[19] = JudgeSendBuff[19]&0xF7;
+
+//        if(_status.chassis != 0)
+//            JudgeSendBuff[19] = JudgeSendBuff[19]|0x04;
+//        else
+//            JudgeSendBuff[19] = JudgeSendBuff[19]&0xFB;
+
+//        if(_status.gimbal != 0)
+//            JudgeSendBuff[19] = JudgeSendBuff[19]|0x02;
+//        else
+//            JudgeSendBuff[19] = JudgeSendBuff[19]&0xFD;
+
+//        if(_gimbal.auto_flag == 1)
+//            JudgeSendBuff[19] = JudgeSendBuff[19]|0x01;
+//        else
+//            JudgeSendBuff[19] = JudgeSendBuff[19]&0xFE;
+
+		Append_CRC16_Check_Sum(JudgeSendBuff,22);
+
+		Uart_Transmit_DMA(&judgement_huart,(uint8_t *)JudgeSendBuff, 22);
+	}
+}
+
+void DMA2_Stream1_IRQHandler(void)
+{
+	DMA_CLEAR_FLAG_ALL(judgement_huart.hdmatx);
+	__HAL_DMA_DISABLE(judgement_huart.hdmatx);
+}
+
 uint16_t datalength_;
 void USART6_IRQHandler(void)
 {
@@ -221,6 +327,7 @@ void USART6_IRQHandler(void)
 		__HAL_DMA_DISABLE(judgement_huart.hdmarx);
 		DMA_CLEAR_FLAG_ALL(judgement_huart.hdmarx);
 
+		_monitor.Judgement++;
         //将DMA接收到的数据写入缓存区
 		num = __HAL_DMA_GET_COUNTER(judgement_huart.hdmarx);
 

@@ -32,19 +32,31 @@
 #endif
 
 params_t _params = { 
-	.accel_offset[0] = 0.286253214f,
-    .accel_offset[1] = 0.205908254f,
-    .accel_offset[2] = -0.00103282928f,
+	.accel_offset[0] = 0.833158433f,
+    .accel_offset[1] = 0.235127971f,
+    .accel_offset[2] = -0.00237941742f,
     .accel_scale[1] = 1.0f,
     .accel_scale[0] = 1.0f,
     .accel_scale[2] = 1.0f,
 
-    .gyro_offset[0] = -0.00396604743f,
-    .gyro_offset[1] = 0.00495731691f,
-    .gyro_offset[2] = 0.00031299665f,
+    .gyro_offset[0] = -0.0198600888f,
+    .gyro_offset[1] = 0.0641340539f,
+    .gyro_offset[2] = 0.156921193f,
     .gyro_scale[0] = 1.0f,
     .gyro_scale[1] = 1.0f,
     .gyro_scale[2] = 1.0f,
+
+	// pitch
+    .att_p[1] = 8.2f,  //20.0f
+    .rate_p[1] = 1.6f,//0.24f 1.00
+    .rate_i[1] = 0.0f,  //0.5f
+	.rate_d[1] = 0.0f,  //0.4f
+
+    // yaw
+    .att_p[2] =  6.0f,//15
+    .rate_p[2] = 1.7f,//0.4f
+    .rate_i[2] = 0.0f,//0.1f
+	.rate_d[2] = 0.0f,// 0.0f
 };
 accel_t _accel = { 0 };
 gyro_t _gyro = { 0 };
@@ -534,6 +546,7 @@ static void calibrate()
     }
 }
 
+//uint16_t iiu = 0;
 static void commander()
 {
     uint64_t t = time();
@@ -541,11 +554,12 @@ static void commander()
     static uint64_t count = 0;
     
     count++;
-
+//iiu ++;
     // calibration
     static uint64_t calibrate_timestamp = 0;
 
-    if (!_calibrate && _radio.rc.pitch > 0.9f && _radio.rc.yaw < -0.9f && _radio.rc.y < -0.9f && _radio.rc.x < -0.9f) {
+//    if (!_calibrate && _radio.rc.pitch > 0.9f && _radio.rc.yaw < -0.9f && _radio.rc.y < -0.9f && _radio.rc.x < -0.9f) {
+     if(!_calibrate && _radio.rc.mode == RC_UP) {
         if (t > calibrate_timestamp + 500000) {
             _calibrate = 1;
         }

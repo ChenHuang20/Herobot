@@ -11,6 +11,7 @@ static uint32_t HAL_RCC_CAN1_CLK_ENABLED=0;
   * @param  void
   * @retval void
   */
+  int fff = 0;
 void BSP_CAN_InitConfig(void)
 {
 	hcan1.Instance = CAN1;
@@ -27,6 +28,7 @@ void BSP_CAN_InitConfig(void)
 	hcan1.Init.TXFP = ENABLE;
 	if (HAL_CAN_Init(&hcan1) != HAL_OK)
 	{
+		fff++;
 	_Error_Handler(__FILE__, __LINE__);
 	}
 

@@ -24,15 +24,17 @@ const unsigned char CRC8_TAB[256] =
 		0xb7, 0x55, 0x0b, 0x88, 0xd6, 0x34, 0x6a, 0x2b, 0x75, 0x97, 0xc9, 0x4a, 0x14, 0xf6, 0xa8,
 		0x74, 0x2a, 0xc8, 0x96, 0x15, 0x4b, 0xa9, 0xf7, 0xb6, 0xe8, 0x0a, 0x54, 0xd7, 0x89, 0x6b,
 		0x35};
-	unsigned char Get_CRC8_Check_Sum(unsigned char *pchMessage,unsigned int dwLength,unsigned char ucCRC8)
- { 
-   unsigned char ucIndex; 
-   while (dwLength--) { 
-                         ucIndex = ucCRC8^(*pchMessage++); 
-                         ucCRC8 = CRC8_TAB[ucIndex]; 
-	                    } 
-    return(ucCRC8); 
- } 
+unsigned char Get_CRC8_Check_Sum(unsigned char *pchMessage,unsigned int dwLength,unsigned char ucCRC8)
+{
+	unsigned char ucIndex;
+
+	while (dwLength--)
+	{
+		 ucIndex = ucCRC8^(*pchMessage++); 
+		 ucCRC8 = CRC8_TAB[ucIndex]; 
+	}
+return(ucCRC8); 
+} 
  /* 
  ** Descriptions: CRC8 Verify function 
  ** Input: Data to Verify,Stream length = Data + checksum 

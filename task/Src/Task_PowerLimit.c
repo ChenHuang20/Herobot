@@ -23,7 +23,7 @@ void Task_PowerLimit(void * pvParameters )
     {
 		_Tick.PowerLimit++;
 
-		Power_Deal();//防止裁判数据失真处理
+//		Power_Deal();//防止裁判数据失真处理
 
 		//根据剩余能量决定限制的最大速度值
 		if(PowerLimit.RemainPower[2]>=40)
@@ -54,6 +54,19 @@ void Task_PowerLimit(void * pvParameters )
 					PowerLimit.pidTemp += (1.8f-PowerLimit.pidTemp)*(1/(PowerLimit.RealSpeed));
 				}
 			}
+            if(PowerLimit.RealSpeed > PowerLimit.v)
+				PowerLimit.MaxSpeed = PowerLimit.v*(1-(Power_Limit_pid.output-PowerLimit.pidTemp)/(0.875f-PowerLimit.pidTemp));
+			else
+			{
+				PowerLimit.MaxSpeed = PowerLimit.RealSpeed*(1-(Power_Limit_pid.output-PowerLimit.pidTemp)/(0.875f-PowerLimit.pidTemp));
+				if(PowerLimit.MaxSpeed <= (PowerLimit.RealSpeed - 1.0f))
+				{
+					PowerLimit.v = PowerLimit.RealSpeed - 1.0f;
+					PowerLimit.v = PowerLimit.v <= 0 ? 0 : PowerLimit.v;
+					PowerLimit.pidTemp += (0.875f-PowerLimit.pidTemp)*(1/(PowerLimit.RealSpeed));
+				}
+			}
+            
 		}
 		else
 		{

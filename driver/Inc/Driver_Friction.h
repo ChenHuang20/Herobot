@@ -28,8 +28,12 @@ typedef struct
 
 extern Fric42Param_t _Fric42Param;
 //extern Fric17Param_t _Fric17Param;
-
+void Fric42_SET(float TargetSpeed);
+void Fric42_OFF(void);
+void Fric17_SET(uint16_t TargetSpeed1,uint16_t TargetSpeed2);
+void Fric17_OFF(void);
 void Fric_InitConfig(void);
+void FricPID_InitConfig(void);
 
 #ifdef __cplusplus
 }

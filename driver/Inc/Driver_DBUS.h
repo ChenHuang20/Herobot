@@ -58,6 +58,7 @@ typedef struct {
     float yaw;
     uint8_t mode;
     uint8_t shoot;
+	uint8_t shoot_pre;
     } rc;
 
     struct {
@@ -85,6 +86,23 @@ typedef struct {
         uint8_t C;//0x20 high
         uint8_t V;//0x40 high
         uint8_t B;//0x80 high
+		
+		uint8_t W_pre;//0x01 low
+        uint8_t S_pre;//0x02 low
+        uint8_t A_pre;//0x04 low
+        uint8_t D_pre;//0x08 low
+        uint8_t Shift_pre;//0x10 low
+        uint8_t Ctrl_pre;//0x20 low
+        uint8_t Q_pre;//0x40 low
+        uint8_t E_pre;//0x80 low
+        uint8_t R_pre;//0x01 high
+        uint8_t F_pre;//0x02 high
+        uint8_t G_pre;//0x04 high
+        uint8_t Z_pre;//0x08 high
+        uint8_t X_pre;//0x10 high
+        uint8_t C_pre;//0x20 high
+        uint8_t V_pre;//0x40 high
+        uint8_t B_pre;//0x80 high
     } key;
 
 } radio_t;

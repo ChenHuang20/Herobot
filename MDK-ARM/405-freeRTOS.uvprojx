@@ -491,6 +491,11 @@
           <GroupName>driver</GroupName>
           <Files>
             <File>
+              <FileName>Driver_CRC.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\driver\Src\Driver_CRC.c</FilePath>
+            </File>
+            <File>
               <FileName>Driver_Bell.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\driver\Src\Driver_Bell.c</FilePath>
@@ -501,9 +506,9 @@
               <FilePath>..\driver\Src\Driver_Stir.c</FilePath>
             </File>
             <File>
-              <FileName>Driver_CRC.c</FileName>
+              <FileName>Driver_Laser.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\driver\Src\Driver_CRC.c</FilePath>
+              <FilePath>..\driver\Src\Driver_Laser.c</FilePath>
             </File>
             <File>
               <FileName>Driver_DBUS.c</FileName>

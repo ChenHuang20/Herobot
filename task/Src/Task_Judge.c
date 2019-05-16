@@ -25,6 +25,10 @@ void Task_Judge(void *Parameters)
 			if(Semaphore == pdTRUE)										//获取信号量成功
 			{
 				judge_read();
+
+				Judge_SendData();
+
+				_JudgeSend.SendAllow = 0;
 				//获取剩余栈大小
 				_StackSurplus.Judge = uxTaskGetStackHighWaterMark(NULL);
 			}

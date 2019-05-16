@@ -8,13 +8,17 @@ Pid_TypeDef Yaw_speed_pid = { 0 };
 Pid_TypeDef Yaw_position_pid = { 0 };
 Pid_TypeDef Pitch_speed_pid = { 0 };
 Pid_TypeDef Pitch_position_pid = { 0 };
-Pid_TypeDef Stir42_speed_pid = { 0 };           
+Pid_TypeDef Stir42_speed_pid = { 0 };     
 Pid_TypeDef Stir17_speed_pid = { 0 };  
 Pid_TypeDef Stir17_position_pid = { 0 };
-Pid_TypeDef Fric42_speed_pid[2] = { 0 };    
+Pid_TypeDef Fric42_speed_pid[2] = { 0 };
 Pid_TypeDef Fric17_speed_pid[2] = { 0 };
 Pid_TypeDef Power_Limit_pid = { 0 };
-
+Pid_TypeDef Yaw_speed_encode_pid = { 0 };
+Pid_TypeDef Yaw_position_encode_pid = { 0 };
+Pid_TypeDef Pitch_speed_encode_pid = { 0 };
+Pid_TypeDef Pitch_position_encode_pid = { 0 };
+Pid_TypeDef Stir42_position_pid = { 0 };
 //初始化PID
 void PID_Init(Pid_TypeDef * pid,
 			  float kp,
@@ -58,10 +62,10 @@ void PID_Calc(Pid_TypeDef * pid,
 	{
 		pid->intergral += (pid->ki) * (pid->err[NOW]);//积分值
 
-		if(pid->intergral > pid->IntegralLimit)//积分上限
-			pid->intergral = pid->IntegralLimit;
-		else if(pid->intergral < -pid->IntegralLimit)//积分下限
-			pid->intergral = -pid->IntegralLimit;
+//		if(pid->intergral > pid->IntegralLimit)//积分上限
+//			pid->intergral = pid->IntegralLimit;
+//		else if(pid->intergral < -pid->IntegralLimit)//积分下限
+//			pid->intergral = -pid->IntegralLimit;
 
 		if(PID_mode == POSITION_PID)
 		{

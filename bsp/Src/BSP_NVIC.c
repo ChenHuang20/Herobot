@@ -31,7 +31,7 @@ void BSP_NVIC_InitConfig(void)
 	HAL_NVIC_EnableIRQ(CAN1_RX0_IRQn);
 
 	//CAN2_RX0_IRQn interrupt configuration
-	HAL_NVIC_SetPriority(CAN2_RX0_IRQn, 5, 0);
+	HAL_NVIC_SetPriority(CAN2_RX0_IRQn, 6, 0);
 	HAL_NVIC_EnableIRQ(CAN2_RX0_IRQn);
 
     //USART1 interrupt Init

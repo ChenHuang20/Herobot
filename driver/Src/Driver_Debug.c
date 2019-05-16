@@ -166,24 +166,6 @@ void DMA1_Stream7_IRQHandler(void)//uart5 tx
     uart_tx_flag = false;
 }
 
-/******************************上位机初始化函数*******************************/
-
-void debug_init(void)
-{
-    //使能串口DMA接收并开启串口空闲中断
-    UART_DMA_RX_INIT(&UART_DEBUG,uart_rx,LENGTH);
-
-    //使能串口DMA发送并开启DMA发送中断
-    UART_DMA_TX_INIT(&UART_DEBUG,10);
-
-    //初始化发送帧帧头
-    uart_tx[0] = 0xAA;
-	uart_tx[1] = 0xAA;
-
-    _send_flag.send_check = false;
-    _send_flag.send_motopwm = false;
-}
-
 /******************************上位机校验函数**********************************/
 
 int16_t Send_Check(void)
@@ -282,7 +264,7 @@ int16_t Send_float_data(void)
 
 /******************************写入PID函数*************************************/
 
-uint8_t debug_write = 0;
+uint8_t debug_write = 1;
 
 void Write_PID(pid_debug_t *pid1,pid_debug_t *pid2,pid_debug_t *pid3)
 {

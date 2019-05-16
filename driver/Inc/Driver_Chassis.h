@@ -8,6 +8,10 @@ extern "C" {
 #endif
 
 
+#define RPM_TO_V 0.007958701389f
+#define YAW_ABSANGLE 3650
+#define PITCH_ABSANGLE 2847
+
 //单电机参数
 typedef struct
 {
@@ -41,6 +45,7 @@ extern ChassisParam_t _ChassisParam;
 void Current_Distribution(int16_t *current, uint16_t total_current);
 void Chassis_SpeedSet(float XSpeed, float YSpeed, float OmegaSpeed);
 void Chassis_InitConfig(void);
+void Twist_Waist(uint8_t mode);
 
 #ifdef __cplusplus
 }

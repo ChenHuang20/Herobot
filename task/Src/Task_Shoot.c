@@ -1,18 +1,29 @@
 #include "Handle.h"
 #include <math.h>
 
+#include "BSP_TIM.h"
+
 #include "Driver_Stir.h"
 #include "Driver_Friction.h"
 #include "Driver_DBUS.h"
+#include "Driver_Steering.h"
+#include "Driver_Monitor.h"
+#include "Driver_Judge.h"
 
 #include "Algorithm_Pid.h"
 
 #include "Task_Shoot.h"
 
+#include "stm32f4xx_hal.h"
+#define BULLET_SAVE 5
 
 uint8_t shoot_last=0;
 uint16_t test=0;
+float Stir17_realPosition = 0.0f;
 
+Shoot_t _shoot = { 0 };
+uint32_t btick = 0;
+float PreTargetSpeed = 0;
 /**
   * @brief  射击任务
   * @param  unused
@@ -27,76 +38,76 @@ void Task_Shoot(void *Parameters)
     while(1)
     {
 		_Tick.Shoot++;
-									 
-        //大拨弹速度环
-		float Stir42_realSpeed = _Stir42Param.RealSpeed * 0.007958701389f / 19.0f;       
-		_Stir42Param.TargetSpeed = 1.0f;
-		PID_Calc(&Stir42_speed_pid, Stir42_realSpeed, _Stir42Param.TargetSpeed, DELTA_PID);
-		_Stir42Param.TargetCurrent = (int16_t)(Stir42_speed_pid.output * 1000.0f);				
+        
 
-		//小拨弹电机位置环
-		float Stir17_realSpeed = _Stir17Param.RealSpeed * 0.007958701389f / 36.0f;
-
-		if((_Stir17Param.RealPosition - _Stir17Param.PrePositon) < -0.5*8192)       //过零点处理
-			_Stir17Param.Round_cnt++;
-		else if((_Stir17Param.RealPosition - _Stir17Param.PrePositon) > 0.5*8192)
-			_Stir17Param.Round_cnt--;
-		float Stir17_realPosition =	_Stir17Param.Round_cnt + _Stir17Param.RealPosition / 8192.0f;
-
-		if(_radio.rc.shoot == 1 && shoot_last == 3 && _Stir17Param.Shoot_task == 0){	 //发射任务过程遥控器不再控制
-			_Stir17Param.Shoot_task = 1;
-			_Stir17Param.Reverse_task = 0;
-			_Stir17Param.TargetPosition += 3.6f;
-			_Stir17Param.Shoot_count = 1;
-		}
-
-		if(_Stir17Param.Shoot_task == 1 && _Stir17Param.Reverse_task == 0){	 //连拨模式
-				if(_Stir17Param.Shoot_count <= _Stir17Param.Shoot_num)
-				_Stir17Param.Shoot_tick++;
-				if(_Stir17Param.Shoot_tick >= _Stir17Param.Shoot_time){
-			    	if(_Stir17Param.Shoot_count == _Stir17Param.Shoot_num)
-						_Stir17Param.Shoot_task = 0;
-					else{
-					_Stir17Param.TargetPosition += 3.6f;                		//一次转36度					
-					_Stir17Param.Shoot_count++;	
-					}
-					_Stir17Param.Shoot_tick = 0;
+/******************************************小拨弹电机*************************************************/
+		if(_radio.rc.mode == 1 && _shoot.friction17 == 0 && _radio.rc.shoot == 2)
+		_shoot.continued_reverse17 = 1;
+		else
+		_shoot.continued_reverse17 = 0;
+		if(_shoot.continued_reverse17 == 0)
+		{
+			if(_shoot.shooting_off17 == 1)
+			{
+				_shoot.reverse17 = 0;
+				_Stir17Param.TargetCurrent = 0;
+			}
+			else
+			{
+				Shooting_Judge17();
+				if(!_shoot.reverse17)
+				{
+					PID_Calc(&Stir17_position_pid, _Stir17Param.CurrentPosition, _Stir17Param.TargetPosition , POSITION_PID);
+					_Stir17Param.TargetSpeed = Stir17_position_pid.output;
 				}
 			}
-
-		PID_Calc(&Stir17_position_pid, Stir17_realPosition,_Stir17Param.TargetPosition , POSITION_PID);
-		_Stir17Param.TargetSpeed = Stir17_position_pid.output/5;
-//		_Stir17Param.TargetSpeed = _radio.rc.x*3.6;
-		PID_Calc(&Stir17_speed_pid, Stir17_realSpeed, _Stir17Param.TargetSpeed, DELTA_PID);
-		_Stir17Param.TargetCurrent = Stir17_speed_pid.output*40;		
-		_Stir17Param.PrePositon = _Stir17Param.RealPosition;
-
-		if(_Stir17Param.TargetPosition - Stir17_realPosition > 1){                  
-				_Stir17Param.Blocked_tick++;
-				if(_Stir17Param.Blocked_tick > 100){
-					_Stir17Param.Reverse_task = 1;  
-					_Stir17Param.TargetPosition = _Stir17Param.TargetPosition-7.2f;		
-					_Stir17Param.Blocked_tick = 0;
-					_Stir17Param.Shoot_tick = 0;
-					_Stir17Param.Shoot_count = 0;
-				}
 		}
-		else if((Stir17_realPosition - _Stir17Param.TargetPosition) > 1 && (_Stir17Param.Reverse_task) == 1){
-				_Stir17Param.Reverse_tick++;
-				if(_Stir17Param.Reverse_tick > 200){
-					_Stir17Param.TargetCurrent = 0;			
-					_Stir17Param.Shoot_task = 0;       				//退出发射任务
-				}
+		else
+		{
+			_Stir17Param.TargetSpeed = -0.9f;
+			_Stir17Param.TargetPosition = _Stir17Param.CurrentPosition + _Stir17Param.Round_cnt;
 		}
-		else if(fabs(_Stir17Param.TargetPosition - Stir17_realPosition) < 0.1){
-				_Stir17Param.Blocked_tick = 0;
-				_Stir17Param.Reverse_tick = 0;
-			if(_Stir17Param.Reverse_task == 1){
-				_Stir17Param.Reverse_task = 0;
-				_Stir17Param.Shoot_task = 0;
+		PID_Calc(&Stir17_speed_pid, _Stir17Param.CurrentSpeed, _Stir17Param.TargetSpeed, DELTA_PID);
+		_Stir17Param.TargetCurrent = (int16_t)(Stir17_speed_pid.output * 600.0f);		
+
+/******************************************大拨弹电机*************************************************/
+
+            _Stir42Param.Sensor = HAL_GPIO_ReadPin(GPIOB,GPIO_PIN_15);
+
+
+		if(_Stir42Param.Sensor == 0 && _Stir42Param.Sensor_last == 1){
+			_Stir42Param.Bullet_count++;
+			Stir42_ON();
+		}
+		if(_Stir42Param.Bullet_count == BULLET_SAVE) 	     //此处改变枪管堆积大弹丸数量（同时记录剩余大弹丸数）
+			_Stir42Param.Stop_flag = 1;
+
+		if(_Stir42Param.Stop_flag == 1){
+		    _Stir42Param.Bullet_tick++;
+			if(_Stir42Param.Bullet_tick > 10){                      //此处改变停转延迟时间
+				 Stir42_OFF();
+				_Stir42Param.Stop_flag = 0;
 			}
 		}
-		shoot_last = _radio.rc.shoot;
+		_Stir42Param.Sensor_last = _Stir42Param.Sensor;
+
+    if(_Stir42Param.Stop_flag == 1) {
+            if(_Stir42Param.TargetSpeed > 0) {
+                _Stir42Param.Stop_flag = 0;
+            _Stir42Param.TargetSpeed = -0.18f;
+                _Stir42Param.Blocked_tick = 0;
+
+            }
+            else {
+            _Stir42Param.TargetSpeed = 0.09f;
+                _Stir42Param.Stop_flag = 0;
+                _Stir42Param.Blocked_tick = 0;
+            }
+        }
+
+            PID_Calc(&Stir42_speed_pid, _Stir42Param.CurrentSpeed, _Stir42Param.TargetSpeed, DELTA_PID);
+		  _Stir42Param.TargetCurrent = (int16_t)(Stir42_speed_pid.output * 300.0f);	
+        
 
 		if((BinSemaphoreShoot != NULL))//接收到数据，并且二值信号量有效
 		{
@@ -105,6 +116,102 @@ void Task_Shoot(void *Parameters)
 		//获取剩余栈大小
 		_StackSurplus.Shoot = uxTaskGetStackHighWaterMark(NULL);
 
-		vTaskDelayUntil(&xLastWakeTime, (5 / portTICK_RATE_MS) );
+		vTaskDelayUntil(&xLastWakeTime, (4 / portTICK_RATE_MS) );
 	}
+}
+
+void Shooting_Judge17(void)
+{
+	if(fabs(Stir17_speed_pid.output) > 22.9f)//电流待调试
+	{
+		_shoot.blocking_tick17++;
+		if(_shoot.blocking_tick17 == 230)
+		{
+			_shoot.reverse17 = 1;
+			_shoot.reverse_count17++;
+		}
+		if(_shoot.blocking_tick17 >= 200)
+		{
+			_shoot.shooting_off17 = 1;
+		}
+	}
+	else
+		_shoot.blocking_tick17 = 0;
+	if(_shoot.reverse17  == 1)
+	{
+		_Stir17Param.TargetSpeed = -0.15f;//速度待调试
+		if(_shoot.reverse_count17 >= 2) {
+			_shoot.shooting_off17 = 1;
+		}
+		_shoot.reverse_tick17++;
+		if(_shoot.reverse_tick17 >= 50*_shoot.reverse_count17)
+		{
+			_shoot.reverse17 = 0;
+			_Stir17Param.TargetPosition = _Stir17Param.CurrentPosition + _Stir17Param.Round_cnt;
+		}
+	}
+	else
+		_shoot.reverse_tick17 = 0;
+		if(_shoot.arti_shoot17)
+		{
+			if(_shoot.reverse17 == 0)
+			{
+				if(_status.judgement == 0)//无裁判系统
+				{
+					_shoot.count_t17 = _shoot.count_c17 + 3;
+					_shoot.dalay_ms17 = 500;
+				}
+				else
+				{
+					if(_Judge.robotLevel == 1)
+					{
+						_shoot.heatmax17 = 1600;
+						_shoot.dalay_ms17 = 400;
+						_shoot.shooting_speed17 = 0;
+						_shoot.count_t17 = _shoot.count_c17+(_shoot.heatmax17/530 - 2);
+					}
+					else if(_Judge.robotLevel == 2)
+					{
+						_shoot.heatmax17 = 3000;
+						_shoot.dalay_ms17 = 300;
+						_shoot.shooting_speed17 = 0.7;
+						_shoot.count_t17 = _shoot.count_c17+(_shoot.heatmax17/700 - 3);
+					}
+					else if(_Judge.robotLevel == 3)
+					{
+						_shoot.heatmax17 = 6000;
+						_shoot.dalay_ms17 = 166;
+						_shoot.shooting_speed17 = 1.5;
+						_shoot.count_t17 = _shoot.count_c17+(_shoot.heatmax17/1000 - 3);
+					}
+				}
+			}
+
+			if(_shoot.friction17 == 1)
+			{
+				{
+					if(_shoot.super_shoot_count17 > 0 && _shoot.shooting_tick17 + 60 <= Tick)
+					{
+						_shoot.super_shoot_count17--;
+						_shoot.flag17 = 1;
+					}
+					else if(_shoot.count_c17 <= _shoot.count_t17 && _shoot.shooting_tick17+_shoot.dalay_ms17 <= Tick)
+					{
+						_shoot.count_c17++;
+						_shoot.flag17 = 1;
+					}
+				}
+			}
+	}
+	if(_shoot.flag17 == 1)
+	{
+		_Stir17Param.TargetPosition -= 6.0f;
+		_shoot.shooting_tick17 = Tick;
+		_shoot.flag17 = 0;
+	}
+//	if(_status.judgement == 1)
+//	{
+//		if(_shoot.heatmax < _Judge.shooterHeat0 + 1500)//超热量保险判断
+//		_Stir17Param.TargetPosition = _Stir17Param.CurrentPosition + _Stir17Param.Round_cnt;
+//	}
 }

@@ -12,7 +12,9 @@
 #include "Driver_Stir.h"
 #include "Driver_DBUS.h"
 #include "Driver_Debug.h"
+#include "Driver_Laser.h"
 #include "Driver_Judge.h"
+#include "Driver_Laser.h"
 #include "Driver_Gimbal.h"
 #include "Driver_CanSend.h"
 #include "Driver_Chassis.h"
@@ -25,6 +27,7 @@
 #include "Task_ModeSwitch.h"
 #include "Task_PowerLimit.h"
 #include "Task_TakeBullet.h"
+#include "Driver_Steering.h"
 #include "Task_CanSend.h"
 #include "Task_Monitor.h"
 #include "Task_Chassis.h"
@@ -35,15 +38,20 @@
 #include "Task_DBUS.h"
 #include "Task_IMU.h"
 
+//#include <stdlib.h>
+//#include <time.h>
+
 /**
   * @brief  系统初始化任务
   * @param  unused
   * @retval void
   */
+  uint32_t uuu = 0;
 void Task_SysInitConfig(void *Parameters)
 {
 /********************************************硬件初始化**********************************************/
 
+//    srand((unsigned) time());
 	HAL_Init();
 	BSP_NVIC_InitConfig();
     BSP_GPIO_InitConfig();
@@ -59,13 +67,14 @@ void Task_SysInitConfig(void *Parameters)
 	ModeSwitch_InitConfig();
 	ICM20600_InitConfig();
 	Chassis_InitConfig();
-	CanSend_InitConfig();
 	Gimbal_InitConfig();
 	Judge_InitConfig();
 	Debug_InitConfig();
+//	Laser_InitConfig();
 	DBUS_InitConfig();
 	Stir_InitConfig();
 	Fric_InitConfig();
+    CanSend_InitConfig();
 
 /********************************************进入临界区**********************************************/
 
@@ -116,27 +125,27 @@ void Task_SysInitConfig(void *Parameters)
 
 	//DBUS任务
 	xTaskCreate(Task_DBUS, "Task_DBUS", 128, NULL, 8, HandleDBUS );
-	
+
     //模式选择任务
-    xTaskCreate(Task_ModeSwitch, "Task_ModeSwitch", 64, NULL, 7, HandleModeSwitch );
+    xTaskCreate(Task_ModeSwitch, "Task_ModeSwitch", 128, NULL, 7, HandleModeSwitch );
 
 	//裁判系统任务
 	xTaskCreate(Task_Judge, "Task_Judge", 256, NULL, 7, NULL );
-	
+
 	//功率限制任务
-	xTaskCreate(Task_PowerLimit, "Task_PowerLimit", 256, NULL, 7, NULL );
+//	xTaskCreate(Task_PowerLimit, "Task_PowerLimit", 256, NULL, 7, NULL );
 
     //底盘任务
-	xTaskCreate(Task_Chassis, "Task_Chassis", 128, NULL, 6, HandleChassis );
+	xTaskCreate(Task_Chassis, "Task_Chassis", 256, NULL, 6, HandleChassis );
 
     //云台任务
-	xTaskCreate(Task_Gimbal, "Task_Gimbal", 128, NULL, 6, HandleGimbal );
+	xTaskCreate(Task_Gimbal, "Task_Gimbal", 228, NULL, 6, HandleGimbal );
 
     //射击任务
-	xTaskCreate(Task_Shoot, "Task_Shoot", 256, NULL, 6, HandleShoot );
+    xTaskCreate(Task_Shoot, "Task_Shoot", 256, NULL, 6, HandleShoot );
 
     //取弹任务
-	xTaskCreate(Task_TakeBullet, "Task_TakeBullet", 64, NULL, 6, HandleTakeBullet );
+	xTaskCreate(Task_TakeBullet, "Task_TakeBullet", 256, NULL, 5, HandleTakeBullet );
 
     //Can1发送任务
 	xTaskCreate(Task_Can1Send, "Task_Can1Send", 256, NULL, 5, HandleCan1Send );
@@ -148,19 +157,14 @@ void Task_SysInitConfig(void *Parameters)
     xTaskCreate(Task_Monitor, "Task_Monitor", 64, NULL, 4, HandleMonitor );
 
 	//上位机调试任务   (仅在调试时创建)
-//	xTaskCreate(Task_Debug, "Task_Debug", 256, NULL, 3, NULL );
+	xTaskCreate(Task_Debug, "Task_Debug", 256, NULL, 3, NULL );
 
 	//IMU任务  (板子没有IMU中断则创建)
-//	xTaskCreate(Task_IMU, "Task_IMU", 128, NULL, 2, HandleIMU );
-	
-	
-
-
-
+	xTaskCreate(Task_IMU, "Task_IMU", 128, NULL, 2, HandleIMU );
 
 /****************************************阻塞系统初始化任务******************************************/
 
-    vTaskDelay(500);
+	vTaskDelay(500);
 
 /********************************************退出临界区**********************************************/
 

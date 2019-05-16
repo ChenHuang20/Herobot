@@ -58,6 +58,11 @@ extern Pid_TypeDef Stir17_position_pid;
 extern Pid_TypeDef Fric42_speed_pid[2] ;    
 extern Pid_TypeDef Fric17_speed_pid[2] ;
 extern Pid_TypeDef Power_Limit_pid;
+extern Pid_TypeDef Yaw_speed_encode_pid;
+extern Pid_TypeDef Yaw_position_encode_pid;
+extern Pid_TypeDef Pitch_speed_encode_pid;
+extern Pid_TypeDef Pitch_position_encode_pid;
+extern Pid_TypeDef Stir42_position_pid;
 
 #ifdef __cplusplus
 }

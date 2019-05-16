@@ -79,24 +79,43 @@ void DBUS_DataProcessing(void)
   */
 static void key_read(void)
 {
-    //低位建
-    _radio.key.W = _radio_raw.key.v_l >> 0;//0x01 low
-    _radio.key.S = _radio_raw.key.v_l >> 1;//0x02 low
-    _radio.key.A = _radio_raw.key.v_l >> 2;//0x04 low
-    _radio.key.D = _radio_raw.key.v_l >> 3;//0x08 low
-    _radio.key.Shift = _radio_raw.key.v_l >> 4;//0x10 low
-    _radio.key.Ctrl = _radio_raw.key.v_l >> 5;//0x20 low
-    _radio.key.Q = _radio_raw.key.v_l >> 6;//0x40 low
-    _radio.key.E = _radio_raw.key.v_l >> 7;//0x80 low
+//    //低位建
+//    _radio.key.W = ((_radio_raw.key.v_l << 7) == 0x80 ? 1 : 0);    //0x01 low
+//    _radio.key.S = ((_radio_raw.key.v_l << 6) == 0x40 ? 1 : 0);    //0x02 low
+//    _radio.key.A = ((_radio_raw.key.v_l << 5) == 0x20 ? 1 : 0);    //0x04 low
+//    _radio.key.D = ((_radio_raw.key.v_l << 4) == 0x10 ? 1 : 0);    //0x08 low
+//    _radio.key.Shift = ((_radio_raw.key.v_l << 3) == 0x08 ? 1 : 0);//0x10 low
+//    _radio.key.Ctrl = ((_radio_raw.key.v_l << 2) == 0x04 ? 1 : 0); //0x20 low
+//    _radio.key.Q = ((_radio_raw.key.v_l << 1) == 0x02 ? 1 : 0);    //0x40 low
+//    _radio.key.E = ((_radio_raw.key.v_l << 0) == 0x01 ? 1 : 0);    //0x80 low
+//    //高位键
+//    _radio.key.R = ((_radio_raw.key.v_l << 7) == 0x80 ? 1 : 0);    //0x01 high
+//    _radio.key.F = ((_radio_raw.key.v_l << 6) == 0x40 ? 1 : 0);    //0x02 high
+//    _radio.key.G = ((_radio_raw.key.v_l << 5) == 0x20 ? 1 : 0);    //0x04 high
+//    _radio.key.Z = ((_radio_raw.key.v_l << 4) == 0x10 ? 1 : 0);    //0x08 high
+//    _radio.key.X = ((_radio_raw.key.v_l << 3) == 0x08 ? 1 : 0);    //0x10 high
+//    _radio.key.C = ((_radio_raw.key.v_l << 2) == 0x04 ? 1 : 0);    //0x20 high
+//    _radio.key.V = ((_radio_raw.key.v_l << 1) == 0x02 ? 1 : 0);    //0x40 high
+//    _radio.key.B = ((_radio_raw.key.v_l << 0) == 0x01 ? 1 : 0);    //0x80 high
+    
+     //低位建
+    _radio.key.W = (_radio_raw.key.v_l );    //0x01 low
+    _radio.key.S = (_radio_raw.key.v_l >> 1);    //0x02 low
+    _radio.key.A = (_radio_raw.key.v_l >> 2);    //0x04 low
+    _radio.key.D = (_radio_raw.key.v_l >> 3);    //0x08 low
+    _radio.key.Shift = (_radio_raw.key.v_l >> 4);//0x10 low
+    _radio.key.Ctrl = (_radio_raw.key.v_l >> 5); //0x20 low
+    _radio.key.Q = (_radio_raw.key.v_l >> 6);    //0x40 low
+    _radio.key.E = (_radio_raw.key.v_l >> 7);    //0x80 low
     //高位键
-    _radio.key.R = _radio_raw.key.v_h >> 0;//0x01 high
-    _radio.key.F = _radio_raw.key.v_h >> 1;//0x02 high
-    _radio.key.G = _radio_raw.key.v_h >> 2;//0x04 high
-    _radio.key.Z = _radio_raw.key.v_h >> 3;//0x08 high
-    _radio.key.X = _radio_raw.key.v_h >> 4;//0x10 high
-    _radio.key.C = _radio_raw.key.v_h >> 5;//0x20 high
-    _radio.key.V = _radio_raw.key.v_h >> 6;//0x40 high
-    _radio.key.B = _radio_raw.key.v_h >> 7;//0x80 high
+    _radio.key.R = (_radio_raw.key.v_h );    //0x01 high
+    _radio.key.F = (_radio_raw.key.v_h >> 1);    //0x02 high
+    _radio.key.G = (_radio_raw.key.v_h >> 2);    //0x04 high
+    _radio.key.Z = (_radio_raw.key.v_h >> 3);    //0x08 high
+    _radio.key.X = (_radio_raw.key.v_h >> 4);    //0x10 high
+    _radio.key.C = (_radio_raw.key.v_h >> 5);    //0x20 high
+    _radio.key.V = (_radio_raw.key.v_h >> 6);    //0x40 high
+    _radio.key.B = (_radio_raw.key.v_h >> 7);    //0x80 high
 }
 
 /**
@@ -106,7 +125,7 @@ static void key_read(void)
   */
 uint8_t single_press(uint8_t key)
 {
-    if(key)
+    if(key == 1)
         return 1;
     else
         return 0;

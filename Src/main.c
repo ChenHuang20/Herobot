@@ -9,7 +9,7 @@ int main(void)
 {
 	xTaskCreate(Task_SysInitConfig,
 				"MAIN",
-				1600,
+				1800,
 				NULL,
 				6,
 				NULL);

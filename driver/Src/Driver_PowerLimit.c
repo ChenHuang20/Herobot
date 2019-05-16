@@ -15,10 +15,10 @@ void PowerLimit_InitConfig(void)
 	PowerLimit.MaxSpeed = _ChassisParam.MaxWheelSpeed;
 
 	PID_Init(&Power_Limit_pid,	  //4号电机速度环
-		  0.06f,//kp
+		  0.5f,//kp
 		  0,//ki
 		  0,//kd
-		  10000,			  //PID最大输出
+		  0.875f,			  //PID最大输出
 		  0,				  //死区
 		  0,				  //积分范围
 		  0);			      //积分限幅
@@ -87,7 +87,7 @@ void Moving_Trial(float *MotoSpeed)
 	}
 	if(PowerLimit.Zoom != 1)
 	{
-		for(PowerLimit.ZoomCount=1;PowerLimit.ZoomCount<=4;PowerLimit.ZoomCount++)
+		for(PowerLimit.ZoomCount=0;PowerLimit.ZoomCount<4;PowerLimit.ZoomCount++)
 		{
 		MotoSpeed[PowerLimit.ZoomCount] = MotoSpeed[PowerLimit.ZoomCount] / PowerLimit.Zoom;
 		}

@@ -1,8 +1,11 @@
-
+#include "Driver_Stir.h"
+#include "Driver_Chassis.h"
 #include "Driver_CanSend.h"
-
+#include "Driver_Friction.h"
+#include "Driver_Gimbal.h"
+#include "Driver_SynchroBelt.h"
 #include "BSP_CAN.h"
-
+#include "BSP_TIM.h"
 /**
   * @brief  底盘CAN发送函数
   * @param  CAN句柄
@@ -99,36 +102,146 @@ struct {
     .state = STATE_NULL
 };
 
+void CAN1_RX0_IRQHandler(void)
+{
+	HAL_CAN_IRQHandler(&hcan1);
+
+	switch(hcan1.pRxMsg->StdId)
+	{
+		case 0x201:
+			//左前轮
+			_ChassisParam.Motor[0].RealSpeed = (int16_t)(hcan1.pRxMsg->Data[2]<<8 | hcan1.pRxMsg->Data[3]);
+			_ChassisParam.Motor[0].RealCurrent = (int16_t)(hcan1.pRxMsg->Data[4]<<8 | hcan1.pRxMsg->Data[5]);
+			break;
+		case 0x202:
+			//右前轮
+			_ChassisParam.Motor[1].RealSpeed = (int16_t)(hcan1.pRxMsg->Data[2]<<8 | hcan1.pRxMsg->Data[3]);
+			_ChassisParam.Motor[1].RealCurrent = (int16_t)(hcan1.pRxMsg->Data[4]<<8 | hcan1.pRxMsg->Data[5]);
+			break;
+		case 0x203:
+			//左后轮
+			_ChassisParam.Motor[2].RealSpeed = (int16_t)(hcan1.pRxMsg->Data[2]<<8 | hcan1.pRxMsg->Data[3]);
+			_ChassisParam.Motor[2].RealCurrent = (int16_t)(hcan1.pRxMsg->Data[4]<<8 | hcan1.pRxMsg->Data[5]);
+			break;
+		case 0x204:
+			//右后轮
+			_ChassisParam.Motor[3].RealSpeed = (int16_t)(hcan1.pRxMsg->Data[2]<<8 | hcan1.pRxMsg->Data[3]);
+			_ChassisParam.Motor[3].RealCurrent = (int16_t)(hcan1.pRxMsg->Data[4]<<8 | hcan1.pRxMsg->Data[5]);
+			break;
+		case 0x205:
+            //Yaw
+            _GimbalParam[YAW].RealEncodeAngle = (int16_t)(hcan1.pRxMsg->Data[0]<<8 | hcan1.pRxMsg->Data[1]);
+            break;
+        case 0x206:
+            //Pitch
+            _GimbalParam[PIT].RealEncodeAngle = (int16_t)(hcan1.pRxMsg->Data[0]<<8 | hcan1.pRxMsg->Data[1]);
+            break;
+		default :
+			break;
+	}
+	__HAL_CAN_ENABLE_IT(&hcan1, CAN_IT_FMP0);
+
+}
+uint16_t io = 0;
 
 void CAN2_RX0_IRQHandler(void)
 {
     HAL_CAN_IRQHandler(&hcan2);
-
+io++;
 //摩擦轮反馈转速 拨弹电机反馈转速和机械角度
-        switch (hcan2.pRxMsg->StdId) {
-					case 0x201://FICMOTOR_LEFT
-										_can2.data[0] = (int16_t)(hcan2.pRxMsg->Data[2]<<8 | hcan2.pRxMsg->Data[3]);
-										break;
+	switch (hcan2.pRxMsg->StdId) {
+		case 0x201://大摩擦轮1速度
+			_Fric42Param.RealSpeed[0] = (int16_t)(hcan2.pRxMsg->Data[2]<<8 | hcan2.pRxMsg->Data[3]);
+			break;
 
-					case 0x202://FICMOTOR_RIGHT
-										_can2.data[1] = (int16_t)(hcan2.pRxMsg->Data[2]<<8 | hcan2.pRxMsg->Data[3]);
-										break;
+		case 0x202://大摩擦轮2速度
+			_Fric42Param.RealSpeed[1]  = (int16_t)(hcan2.pRxMsg->Data[2]<<8 | hcan2.pRxMsg->Data[3]);
+			break;
 
-					case 0x203://STIRMOTOR
-										_can2.data[2] = (int16_t)(hcan2.pRxMsg->Data[2]<<8 | hcan2.pRxMsg->Data[3]);
-					                    _can2.data[3] = (int16_t)(hcan2.pRxMsg->Data[0]<<8 | hcan2.pRxMsg->Data[1]);
-                                        break;
-			    default:                break;
+		case 0x203://小拨弹机械角度和速度
+			_Stir17Param.RealSpeed = (int16_t)(hcan2.pRxMsg->Data[2]<<8 | hcan2.pRxMsg->Data[3]);
+		    _Stir17Param.CurrentSpeed = _Stir17Param.RealSpeed / 6500.0f;
+
+			if(_Stir17Param.msg_cnt++ <= 10)
+			{
+			_Stir17Param.EncoderPosition = (int16_t)(hcan2.pRxMsg->Data[0]<<8 | hcan2.pRxMsg->Data[1]);
+			_Stir17Param.RealPosition = (float)_Stir17Param.EncoderPosition / 8192.0f;
+			_Stir17Param.offset_angle = _Stir17Param.RealPosition;
+			}
+
+			_Stir17Param.PrePositon = _Stir17Param.RealPosition;
+
+            _Stir17Param.EncoderPosition = (int16_t)(hcan2.pRxMsg->Data[0]<<8 | hcan2.pRxMsg->Data[1]);
+			_Stir17Param.RealPosition = (float)_Stir17Param.EncoderPosition / 8192.0f;
+
+
+            if((_Stir17Param.RealPosition - _Stir17Param.PrePositon) < -0.45f)           //过零点处理
+                _Stir17Param.Round_cnt++;
+            else if((_Stir17Param.RealPosition - _Stir17Param.PrePositon) > 0.45f)
+                _Stir17Param.Round_cnt--;
+
+            _Stir17Param.CurrentPosition = _Stir17Param.Round_cnt + _Stir17Param.RealPosition;
+
+            break;
+
+		case 0x204://大拨弹
+			_Stir42Param.RealSpeed = (int16_t)(hcan2.pRxMsg->Data[2]<<8 | hcan2.pRxMsg->Data[3]);
+			_Stir42Param.CurrentSpeed = _Stir42Param.RealSpeed * RPM_TO_V / 19.0f;
+
+            _Stir42Param.RealSpeed = (int16_t)(hcan2.pRxMsg->Data[2]<<8 | hcan2.pRxMsg->Data[3]);
+		    _Stir42Param.CurrentSpeed = _Stir42Param.RealSpeed / 6500.0f;
+
+			if(_Stir42Param.msg_cnt++ <= 10)
+			{
+			_Stir42Param.EncoderPosition = (int16_t)(hcan2.pRxMsg->Data[0]<<8 | hcan2.pRxMsg->Data[1]);
+			_Stir42Param.RealPosition = (float)_Stir42Param.EncoderPosition / 8192.0f;
+//			_Stir42Param.offset_angle = _Stir42Param.RealPosition;
+			}
+
+			_Stir42Param.PrePositon = _Stir42Param.RealPosition;
+            _Stir42Param.LastPosition = _Stir42Param.CurrentPosition;
+
+            _Stir42Param.EncoderPosition = (int16_t)(hcan2.pRxMsg->Data[0]<<8 | hcan2.pRxMsg->Data[1]);
+			_Stir42Param.RealPosition = (float)_Stir42Param.EncoderPosition / 8192.0f;
+
+            if((_Stir42Param.RealPosition - _Stir42Param.PrePositon) < -0.45f)           //过零点处理
+                _Stir42Param.Round_cnt++;
+            else if((_Stir42Param.RealPosition - _Stir42Param.PrePositon) > 0.45f)
+                _Stir42Param.Round_cnt--;
+
+            _Stir42Param.CurrentPosition = _Stir42Param.Round_cnt + _Stir42Param.RealPosition;
+
+            if(_Stir42Param.CurrentPosition - _Stir42Param.LastPosition <= 0.0035f)
+            {
+                _Stir42Param.Blocked_tick++;
+                if(_Stir42Param.Blocked_tick > 1000) { //(400ms)
+                    _Stir42Param.Stop_flag = 1;
+                }
+            }
+            else
+            {
+                
+                _Stir42Param.Blocked_tick = 0;
+                _Stir42Param.Stop_flag = 0;
+            }
+
+//            _Stir42Param.PreBlockPositon = _Stir42Param.CurrentPosition;
+			break;
+        case 0x01B://机械臂
+            _ArmParam.RealCurrent  = (hcan2.pRxMsg->Data[0]<<8)|hcan2.pRxMsg->Data[1];
+            _ArmParam.RealVelocity = (hcan2.pRxMsg->Data[2]<<8)|hcan2.pRxMsg->Data[3];
+            _ArmParam.RealPosition = (hcan2.pRxMsg->Data[4]<<24)| (hcan2.pRxMsg->Data[5]<<16)| (hcan2.pRxMsg->Data[6]<<8)| hcan2.pRxMsg->Data[7];
+            break;
+//		case 0x02B://同步带
+//            _SynchroBeltParam.RealCurrent  = (hcan2.pRxMsg->Data[0]<<8)|hcan2.pRxMsg->Data[1];
+//            _SynchroBeltParam.RealVelocity = (hcan2.pRxMsg->Data[2]<<8)|hcan2.pRxMsg->Data[3];
+//            _SynchroBeltParam.RealPosition = (hcan2.pRxMsg->Data[4]<<24)| (hcan2.pRxMsg->Data[5]<<16)| (hcan2.pRxMsg->Data[6]<<8)| hcan2.pRxMsg->Data[7];
+//		    break;		
+		default:                break;
+		
         }
     __HAL_CAN_ENABLE_IT(&hcan2, CAN_IT_FMP0);
 }
-
-
-
-
-
-
-
 
 
 
@@ -754,99 +867,29 @@ HAL_StatusTypeDef CAN_RoboModule_DRV_Online_Check(unsigned char Group,unsigned c
     return HAL_CAN_Transmit(&hcan2, 1000);
 }
 
-short Real_Current_Value[4] = {0};
-short Real_Velocity_Value[4] = {0};
-long Real_Position_Value[4] = {0};
-char Real_Online[4] = {0};
-char Real_Ctl1_Value[4] = {0};
-char Real_Ctl2_Value[4] = {0};
-
-//本接收数据的函数，默认为4个驱动器，都挂在0组，编号为1、2、3、4
-/*************************************************************************
-                          CAN1_RX0_IRQHandler
-描述：CAN1的接收中断函数
-*************************************************************************/
-//void CAN1_RX0_IRQHandler(void)
-//{
-//    CanRxMsg rx_message;
-//    
-//    if (CAN_GetITStatus(CAN1,CAN_IT_FMP0)!= RESET)
-//	{
-//        CAN_ClearITPendingBit(CAN1, CAN_IT_FMP0);
-//        CAN_Receive(CAN1, CAN_FIFO0, &rx_message);
-//        
-//        if((rx_message.IDE == CAN_Id_Standard)&&(rx_message.IDE == CAN_RTR_Data)&&(rx_message.DLC == 8)) //标准帧、数据帧、数据长度为8
-//        {
-//            if(rx_message.StdId == 0x1B)
-//            {
-//                Real_Current_Value[0] = (rx_message.Data[0]<<8)|(rx_message.Data[1]);
-//                Real_Velocity_Value[0] = (rx_message.Data[2]<<8)|(rx_message.Data[3]);
-//                Real_Position_Value[0] = ((rx_message.Data[4]<<24)|(rx_message.Data[5]<<16)|(rx_message.Data[6]<<8)|(rx_message.Data[7]));
-//            }
-//            else if(rx_message.StdId == 0x2B)
-//            {
-//                Real_Current_Value[1] = (rx_message.Data[0]<<8)|(rx_message.Data[1]);
-//                Real_Velocity_Value[1] = (rx_message.Data[2]<<8)|(rx_message.Data[3]);
-//                Real_Position_Value[1] = ((rx_message.Data[4]<<24)|(rx_message.Data[5]<<16)|(rx_message.Data[6]<<8)|(rx_message.Data[7]));
-//            }
-//            else if(rx_message.StdId == 0x3B)
-//            {
-//                Real_Current_Value[2] = (rx_message.Data[0]<<8)|(rx_message.Data[1]);
-//                Real_Velocity_Value[2] = (rx_message.Data[2]<<8)|(rx_message.Data[3]);
-//                Real_Position_Value[2] = ((rx_message.Data[4]<<24)|(rx_message.Data[5]<<16)|(rx_message.Data[6]<<8)|(rx_message.Data[7]));
-//            }
-//            else if(rx_message.StdId == 0x4B)
-//            {
-//                Real_Current_Value[3] = (rx_message.Data[0]<<8)|(rx_message.Data[1]);
-//                Real_Velocity_Value[3] = (rx_message.Data[2]<<8)|(rx_message.Data[3]);
-//                Real_Position_Value[3] = ((rx_message.Data[4]<<24)|(rx_message.Data[5]<<16)|(rx_message.Data[6]<<8)|(rx_message.Data[7]));
-//            }
-//            else if(rx_message.StdId == 0x1F)
-//            {
-//                Real_Online[0] = 1;
-//            }
-//            else if(rx_message.StdId == 0x2F)
-//            {
-//                Real_Online[1] = 1;
-//            }
-//            else if(rx_message.StdId == 0x3F)
-//            {
-//                Real_Online[2] = 1;
-//            }
-//            else if(rx_message.StdId == 0x4F)
-//            {
-//                Real_Online[3] = 1;
-//            }
-//            else if(rx_message.StdId == 0x1C)
-//            {
-//                Real_Ctl1_Value[0] = rx_message.Data[0];
-//                Real_Ctl2_Value[0] = rx_message.Data[1];
-//            }
-//            else if(rx_message.StdId == 0x2C)
-//            {
-//                Real_Ctl1_Value[1] = rx_message.Data[0];
-//                Real_Ctl2_Value[1] = rx_message.Data[1];
-//            }
-//            else if(rx_message.StdId == 0x3C)
-//            {
-//                Real_Ctl1_Value[2] = rx_message.Data[0];
-//                Real_Ctl2_Value[2] = rx_message.Data[1];
-//            }
-//            else if(rx_message.StdId == 0x4C)
-//            {
-//                Real_Ctl1_Value[3] = rx_message.Data[0];
-//                Real_Ctl2_Value[3] = rx_message.Data[1];
-//            }
-
-//        }
-//                
-//    }
-//}
 void CanSend_InitConfig(void)
 {
-	//group: 0   number: 10
-	CAN_RoboModule_DRV_Reset(0,10);
-	//group: 0   number: 10   mode: Velocity_Mode
-	CAN_RoboModule_DRV_Mode_Choice(0,10,0x03);
+//                                     //刚开始要有足够的延时，确保驱动器已经初始化完成
+//	while (CAN_RoboModule_DRV_Reset(0,0) != HAL_OK);                     //对0组所有的驱动器进行复位
+//                                      //发送复位指令后的延时必须要有，等待驱动器再次初始化完成
+//    while (CAN_RoboModule_DRV_Config(0,1,100,0)!= HAL_OK);               //1号驱动器配置为100ms传回一次电流速度位置数据
+//                                     //此处延时为了不让传回数据时候4个不一起传
+////    while (CAN_RoboModule_DRV_Config(0,2,100,0)!= HAL_OK);                //2号驱动器配置为100ms传回一次电流速度位置数据
+
+//    while (CAN_RoboModule_DRV_Mode_Choice(0,0,Current_Velocity_Position_Mode)!= HAL_OK);  //0组的所有驱动器 都进入电流-速度-位置模式
+//    
+//    usleep(500);                                      //发送模式选择指令后，要等待驱动器进入模式就绪。所以延时也不可以去掉。
+    
+    usleep(500);                                        //刚开始要有足够的延时，确保驱动器已经初始化完成
+	CAN_RoboModule_DRV_Reset(0,0);                     //对0组所有的驱动器进行复位
+    usleep(500);                                        //发送复位指令后的延时必须要有，等待驱动器再次初始化完成
+    CAN_RoboModule_DRV_Config(0,1,100,0);               //1号驱动器配置为100ms传回一次电流速度位置数据
+    usleep(200);                                        //此处延时为了不让传回数据时候4个不一起传
+    CAN_RoboModule_DRV_Config(0,2,100,0);                //2号驱动器配置为100ms传回一次电流速度位置数据
+
+//   CAN_RoboModule_DRV_Mode_Choice(0,0,Current_Velocity_Position_Mode);  //0组的所有驱动器 都进入电流-速度-位置模式
+   CAN_RoboModule_DRV_Mode_Choice(0,0,Position_Mode);  //0组的所有驱动器 都进入电流-速度-位置模式
+    
+    usleep(500);                                      //发送模式选择指令后，要等待驱动器进入模式就绪。所以延时也不可以去掉。
 }
 

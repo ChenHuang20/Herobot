@@ -1,7 +1,9 @@
 
 #include "Handle.h"
+#include "Driver_Monitor.h"
 
 #include "Task_Monitor.h"
+
 
 /**
   * @brief  监控任务
@@ -55,6 +57,11 @@ void Task_Monitor(void *Parameters)
 		}
 		//获取剩余栈大小
 		_StackSurplus.Monitor = uxTaskGetStackHighWaterMark(NULL);
+		
+		if(_monitor.Judgement > 5)
+			_status.judgement = 1;
+		else
+			_status.judgement = 0;
 
 		//20ms检测一次
 		vTaskDelayUntil(&xLastWakeTime, (20 / portTICK_RATE_MS) );

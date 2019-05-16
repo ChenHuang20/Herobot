@@ -38,6 +38,7 @@
 
 #include "BSP_DMA.h"
 #include "Driver_DBUS.h"
+#include "Driver_Gimbal.h"
 #include "Driver_Chassis.h"
 #include "Driver_ICM20600.h"
 
@@ -228,38 +229,7 @@ void DMA1_Stream5_IRQHandler(void)
 /**
 * @brief This function handles CAN1 RX0 interrupts.
 */
-void CAN1_RX0_IRQHandler(void)
-{
-	HAL_CAN_IRQHandler(&hcan1);
 
-	switch(hcan1.pRxMsg->StdId)
-	{
-		case 0x201:
-			//×óÇ°ÂÖ
-			_ChassisParam.Motor[0].RealSpeed = (int16_t)(hcan1.pRxMsg->Data[2]<<8 | hcan1.pRxMsg->Data[3]);
-			_ChassisParam.Motor[0].RealCurrent = (int16_t)(hcan1.pRxMsg->Data[4]<<8 | hcan1.pRxMsg->Data[5]);
-			break;
-		case 0x202:
-			//ÓÒÇ°ÂÖ
-			_ChassisParam.Motor[1].RealSpeed = (int16_t)(hcan1.pRxMsg->Data[2]<<8 | hcan1.pRxMsg->Data[3]);
-			_ChassisParam.Motor[1].RealCurrent = (int16_t)(hcan1.pRxMsg->Data[4]<<8 | hcan1.pRxMsg->Data[5]);
-			break;
-		case 0x203:
-			//×óºóÂÖ
-			_ChassisParam.Motor[2].RealSpeed = (int16_t)(hcan1.pRxMsg->Data[2]<<8 | hcan1.pRxMsg->Data[3]);
-			_ChassisParam.Motor[2].RealCurrent = (int16_t)(hcan1.pRxMsg->Data[4]<<8 | hcan1.pRxMsg->Data[5]);
-			break;
-		case 0x204:
-			//ÓÒºóÂÖ
-			_ChassisParam.Motor[3].RealSpeed = (int16_t)(hcan1.pRxMsg->Data[2]<<8 | hcan1.pRxMsg->Data[3]);
-			_ChassisParam.Motor[3].RealCurrent = (int16_t)(hcan1.pRxMsg->Data[4]<<8 | hcan1.pRxMsg->Data[5]);
-			break;
-		default :
-			break;
-	}
-	__HAL_CAN_ENABLE_IT(&hcan1, CAN_IT_FMP0);
-
-}
 
 /**
 * @brief This function handles USART1 global interrupt.
@@ -355,16 +325,16 @@ void TIM6_DAC_IRQHandler(void)
 /**
 * @brief This function handles DMA2 stream1 global interrupt.
 */
-void DMA2_Stream1_IRQHandler(void)
-{
-  /* USER CODE BEGIN DMA2_Stream1_IRQn 0 */
+//void DMA2_Stream1_IRQHandler(void)
+//{
+//  /* USER CODE BEGIN DMA2_Stream1_IRQn 0 */
 
-  /* USER CODE END DMA2_Stream1_IRQn 0 */
-  HAL_DMA_IRQHandler(&hdma_usart6_rx);
-  /* USER CODE BEGIN DMA2_Stream1_IRQn 1 */
+//  /* USER CODE END DMA2_Stream1_IRQn 0 */
+//  HAL_DMA_IRQHandler(&hdma_usart6_rx);
+//  /* USER CODE BEGIN DMA2_Stream1_IRQn 1 */
 
-  /* USER CODE END DMA2_Stream1_IRQn 1 */
-}
+//  /* USER CODE END DMA2_Stream1_IRQn 1 */
+//}
 
 /**
 * @brief This function handles DMA2 stream2 global interrupt.

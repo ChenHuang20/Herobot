@@ -29,7 +29,7 @@ void Task_Can1Send(void *Parameters)
 		HAL_StatusTypeDef EventCanChassis = HAL_TIMEOUT;
 		HAL_StatusTypeDef EventCanGimbal = HAL_TIMEOUT;
 		_Tick.Can1Send++;
-
+taskENTER_CRITICAL();
 		//获取底盘任务信号量
 		if(BinSemaphoreChassis!=NULL)
 		{
@@ -52,19 +52,23 @@ void Task_Can1Send(void *Parameters)
 				xEventGroupSetBits(EventGroupHandler,EVENTBIT_0);
 			}
 		}
-//		//获取云台任务信号量
-//		if(BinSemaphoreGimbal!=NULL)
-//		{
-//			SemaphoreGimbal = xSemaphoreTake(BinSemaphoreGimbal,2);//等待2ms超时时间
+		//获取云台任务信号量
+		if(BinSemaphoreGimbal!=NULL)
+		{
+			SemaphoreGimbal = xSemaphoreTake(BinSemaphoreGimbal,2);//等待2ms超时时间
 
-//			if(SemaphoreGimbal == pdTRUE)
-//			{
-//				EventCanGimbal = send_gimbal_current(&hcan1,                   //CAN句柄
-//													 PitchParam.TargetCurrent, //pitch电流   6623
-//													 //YawParam.TargetCurrent
-//													0							);  //yaw电流	 6623
-//			}
-//		}
+			if(SemaphoreGimbal == pdTRUE)
+			{
+				EventCanGimbal = send_gimbal_current(&hcan1,
+//				//CAN句柄
+				                                     _GimbalParam[YAW].SendCurrent, //yaw电流	 6623
+													 _GimbalParam[PIT].SendCurrent);//pitch电流   6623
+				EventCanGimbal = send_gimbal_current(&hcan1,
+				//CAN句柄
+				                                     (int16_t)(_pid.output_gimbal[2] * 2000.0f), //yaw电流	 6623
+													 (int16_t)(_pid.output_gimbal[1] * 2000.0f));//pitch电流   6623
+			}
+		}
 		//设置监控云台CAN事件位BIT1
 		if(EventGroupHandler!=NULL)
 		{
@@ -75,7 +79,7 @@ void Task_Can1Send(void *Parameters)
 		}
 		//获取剩余栈大小
 		_StackSurplus.Can1Send = uxTaskGetStackHighWaterMark(NULL);
-
+taskEXIT_CRITICAL();
 	vTaskDelay(4);
     }
 }
@@ -105,8 +109,8 @@ void Task_Can2Send(void *Parameters)
 			if(SemaphoreShoot == pdTRUE)
 			{
 				EventCanShoot = send_shoot_current(&hcan2,//CAN句柄
-													_Fric42Param.TargetSpeed[0],    //大摩擦轮1电流  3510
-													_Fric42Param.TargetSpeed[1],    //大摩擦轮2电流  3510
+													_Fric42Param.TargetCurrent[0],   //大摩擦轮1电流  3510
+													_Fric42Param.TargetCurrent[1],   //大摩擦轮2电流  3510
 													_Stir17Param.TargetCurrent,    //小拨弹电机电流 2310
 													_Stir42Param.TargetCurrent);   //大拨弹电机电流 3508
 			}
@@ -127,10 +131,10 @@ void Task_Can2Send(void *Parameters)
 			if(SemaphoreTakeBullet == pdTRUE)
 			{
 				//蓝盒速度环
-				EventCanTakeBullet = CAN_RoboModule_DRV_Velocity_Mode(0,	//group
-																	  10,	//number
-																	  5000, //输出电压
-																	  1400);//速度(RPM)
+//				EventCanTakeBullet = CAN_RoboModule_DRV_Velocity_Mode(0,	//group
+//																	  10,	//number
+//																	  5000, //输出电压
+//																	  1400);//速度(RPM)
 			}
 		}
 		//设置监控取弹CAN事件位BIT3
